@@ -1,0 +1,78 @@
+---
+// layouts/mainLayout.astro
+import '../styles/global.css';
+import '../styles/main.css';
+import MainHeader from '../components/headers/mainHeader.astro';
+import MainFooter from '../components/footers/mainFooter.astro';
+import Animations from '../components/animations/Animations.astro';
+import LogoUrl from '../assets/images/logo-escuro.png';
+
+const menuItems = [
+  { label: 'Início', url: '/' },
+  { label: 'Serviços', url: '/servicos' },
+  { label: 'Posts', url: '/blog' },
+  { label: 'Contato', url: '/contato' },
+];
+
+const {
+  title,
+  description,
+  noindex,
+  nofollow,
+  canonical,
+  og_title,
+  og_description,
+  og_image,
+  twitter_card,
+  structured_data,
+} = Astro.props;
+
+const defaultUrl = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title ? `${title} | Lumino Clínica` : 'Lumino Clínica - Odontologia de Luxo'}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={`${noindex ? 'noindex' : 'index'},${nofollow ? 'nofollow' : 'follow'}`}
+    />
+    <link rel="canonical" href={canonical || defaultUrl} />
+    <!-- Open Graph -->
+    <meta property="og:title" content={og_title || title} />
+    <meta property="og:description" content={og_description || description} />
+    <meta property="og:image" content={og_image} />
+    <!-- Twitter -->
+    <meta name="twitter:card" content={twitter_card || 'summary'} />
+    <!-- Structured Data -->
+    {structured_data && (
+      <script type="application/ld+json" is:inline set:html={structured_data} />
+    )}
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"
+      is:inline></script>
+  </head>
+  <body>
+    <!-- Hydrate assim que o JS carregar -->
+    <MainHeader
+      logoUrl={LogoUrl.src}
+      ctaText="Agendar Consulta"
+      menuItems={menuItems}
+    />
+
+    <slot />
+    <Animations />
+    <!-- Correção: Passar props corretamente no Astro -->
+    <MainFooter MenuItems={menuItems} />
+  </body>
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</html>

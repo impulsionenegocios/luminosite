@@ -1,0 +1,55 @@
+---
+// pages/blog/[slug].astro
+
+import MainLayout from '../layouts/mainLayout.astro';
+import Heading from '../components/typograph/Heading.astro';
+import Paragraph from '../components/typograph/Paragraph.astro';
+
+// Dados para a página
+const pageTitle = 'Termos de Uso';
+const pageDescription = 'Termos de Uso Lúmino Clinica Integrada';
+---
+
+<MainLayout title={pageTitle} description={pageDescription}>
+  <section
+    class="bg-light-bg pt-32 pb-8 relative overflow-hidden text-center flex justify-center items-center flex-col"
+    id="postHeader"
+  >
+    <div class="reveal-effect text-center mt-16">
+      <h1
+        class="font-cormorant text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-dark leading-tight max-w-4xl"
+      >
+        Termos de Uso
+      </h1>
+    </div>
+  </section>
+  <section class="py-16 relative overflow-hidden" id="postContent">
+    <div
+      class="absolute top-[10%] left-[5%] w-[1px] h-[80%] bg-gradient-to-b from-transparent via-primary-gold to-transparent"
+    >
+    </div>
+    <div
+      class="absolute bottom-[20%] right-[8%] w-[1px] h-[40%] bg-gradient-to-b from-transparent via-primary-gold/20 to-transparent"
+    >
+    </div>
+
+    <div class="relative z-10">
+      <div class="">
+        <div>
+          <div class="reveal-effect">
+            <div
+              class="bg-white rounded-2xl lg:mx-48 mx-8 px-4 lg:px-18 py-8 shadow-sm border border-gray-100"
+            >
+              <div class="blog-content text-gray-700 leading-relaxed space-y-6">
+                <Paragraph
+                  class="px-48 mx-48"
+                  text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor assumenda doloribus voluptatum non harum laborum repellendus nulla nesciunt illo temporibus. Exercitationem non voluptates quia ratione modi fuga similique unde cumque. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor assumenda doloribus voluptatum non harum laborum repellendus nulla nesciunt illo temporibus. Exercitationem non voluptates quia ratione modi fuga similique unde cumque. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor assumenda doloribus voluptatum non harum laborum repellendus nulla nesciunt illo temporibus. Exercitationem non voluptates quia ratione modi fuga similique unde cumque. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor assumenda doloribus voluptatum non harum laborum repellendus nulla nesciunt illo temporibus. Exercitationem non voluptates quia ratione modi fuga similique unde cumque. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor assumenda doloribus voluptatum non harum laborum repellendus nulla nesciunt illo temporibus. Exercitationem non voluptates quia ratione modi fuga similique unde cumque."
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>

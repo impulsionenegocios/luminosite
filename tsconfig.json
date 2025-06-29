@@ -1,0 +1,18 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [
+    ".astro/types.d.ts",
+    "src/**/*",
+    "src/data/sections/**/*"
+  ],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // <<< ADICIONE ISTO:
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["node", "astro/client"]
+  }
+}

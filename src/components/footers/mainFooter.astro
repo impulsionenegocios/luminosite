@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import { getMainData } from '../../data/mainData';
+import MdiIcon from '../utils/MdiIcon.astro';
+
+const mainData = await getMainData();
+if (!mainData) {
+  return Astro.redirect('/404');
+}
+
+// Aqui dentro o TypeScript enxerga `Date`
+const date = new Date();
+const year = date.getFullYear();
+
+export interface MenuItem {
+  label: string;
+  url: string;
+}
+
+const { MenuItems } = Astro.props;
+---
+
+<footer>
+  <div class="counter-particles"></div>
+  <div class="footer-shape footer-shape-1"></div>
+  <div class="footer-shape footer-shape-2"></div>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-column footer-about">
+        <Image
+          src={mainData.logo_clara || ''}
+          alt={'logo ' + mainData.nome || 'logo lumino'}
+          class="mb-8"
+          loading="eager"
+          width="200"
+          height="80"
+          decoding="async"
+          format="webp"
+          quality="90"
+        />
+        <p>
+          {mainData.descricao || ''}
+        </p>
+        <div class="footer-social">
+          {
+            mainData.link_instagram && (
+              <a href={mainData.link_instagram || 'https://instagram.com/luminoclinica'} class="social-icon">
+                <MdiIcon name="instagram" />
+              </a>
+            )
+          }
+
+          {
+            mainData.link_facebook && (
+              <a href={mainData.link_facebook || 'https://facecbook.com/luminoclinica'} class="social-icon">
+                <MdiIcon name="facebook" />
+              </a>
+            )
+          }
+
+          {
+            mainData.link_google && (
+              <a href={mainData.link_google || 'https://google.com/luminoclinica'} class="social-icon">
+                <MdiIcon name="google" />
+              </a>
+            )
+          }
+
+          {
+            mainData.link_whatsapp && (
+              <a href={mainData.link_whatsapp || 'https://whatsapp.com/luminoclinica'} class="social-icon">
+                <MdiIcon name="whatsapp" />
+              </a>
+            )
+          }
+          {
+            mainData.link_youtube && (
+              <a href={mainData.link_youtube || 'https://youtube.com/luminoclinica'} class="social-icon">
+                <MdiIcon name="youtube" />
+              </a>
+            )
+          }
+        </div>
+      </div>
+      <div class="footer-column footer-links">
+        <h3 class="footer-heading">Links Rápidos</h3>
+        <ul class="grid grid-cols-2">
+          {
+            //@ts-ignore
+            MenuItems.map((item) => (
+              <li>
+                <a href={item.url}>{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div class="footer-column footer-contact">
+        <h3 class="footer-heading">Contato</h3>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">📍</div>
+          <div class="footer-contact-text">
+            {mainData.endereco}
+          </div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">📞</div>
+          <div class="footer-contact-text">{mainData.telefone}</div>
+        </div>
+        <div class="footer-contact-item">
+          <div class="footer-contact-icon">✉️</div>
+          <div class="footer-contact-text">{mainData.email}</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© {year} Lumino Clínica. Todos os direitos reservados.</p>
+      <div class="footer-bottom-links">
+        <a href="/politicas-de-privacidade">Política de Privacidade</a>
+        <a href="/termos-de-uso">Termos de Uso</a>
+      </div>
+    </div>
+  </div>
+</footer>

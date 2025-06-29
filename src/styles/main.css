@@ -1,0 +1,101 @@
+@import 'tailwindcss';
+
+/* ----------------------------------- FONTE ----------------------------------- */
+
+/* Import Cormorant and Montserrat for the luxury header */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Montserrat:wght@200;300;400;500;600;700&display=swap');
+
+/* ----------------------------------- PALETA ----------------------------------- */
+@theme {
+  /* Existing colors */
+  --color-joquei-cian: #00818d;
+  --color-joquei-blue: #004966;
+  --color-joquei-yellow: #ffa400;
+  --color-joquei-orange: #ff7724;
+  --color-joquei-lightblue: #00bdba;
+
+  /* Luxury header colors */
+  --color-primary-dark: #131f2f;
+  --color-primary-gold: #c9a874;
+  --color-gold-light: #e9d7b8;
+  --color-gold-dark: #a28350;
+  --color-light-bg: #f9f7f2;
+  --color-off-white: #f8f5f0;
+  --color-gray-light: #f0f0f0;
+  --color-gray-text: #777777;
+
+  /* Existing gradients */
+  --gradient-primary: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  --gradient-orange: linear-gradient(to right, #ff9800, #f57c00);
+  --gradient-danger: linear-gradient(to right, #ef4444, #b91c1c);
+  --gradient-success: linear-gradient(to bottom, #36d869, #cbffdb);
+
+  /* Luxury header gradients */
+  --gradient-dark: linear-gradient(145deg, #131f2f 0%, #1e2d42 100%);
+  --gradient-gold: linear-gradient(145deg, #c9a874 0%, #d9b88f 100%);
+  --gradient-blend: linear-gradient(145deg, #131f2f 0%, #c9a874 100%);
+
+  /* Font families */
+  --font-sans: 'Montserrat', system-ui, sans-serif;
+  --font-serif: 'Cormorant', serif;
+
+  --animate-ease-out-expo: 'cubic-bezier(0.23, 1, 0.32, 1)';
+}
+
+/* Define utility classes for our custom font */
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Define background gradients */
+.bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+
+.bg-gradient-dark {
+  background: var(--gradient-dark);
+}
+
+.bg-gradient-blend {
+  background: var(--gradient-blend);
+}
+
+/* 🔥 Regra geral para celular (até 768px) */
+@media (max-width: 768px) {
+  html,
+  body {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--primary-gold) transparent;
+  }
+
+  /* Chrome mobile ignora WebKit, então só isso funciona */
+}
+
+/* 🔥 Regra geral para desktop */
+@media (min-width: 769px) {
+  /* Aplica apenas no desktop, onde Chrome/Safari usam WebKit */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--primary-gold);
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background-clip: content-box;
+  }
+}

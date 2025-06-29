@@ -1,0 +1,15 @@
+---
+import MainLayout from '../../layouts/mainLayout.astro';
+import ServicesSection from '../../components/sections/servicesSection.astro';
+const pageTitle = 'Nossos Serviços';
+const pageDescription =
+  'Conheça todos os nossos tratamentos estéticos. Botox, preenchimento, harmonização facial e muito mais. Agende sua consulta gratuita.';
+---
+
+<MainLayout title={pageTitle} description={pageDescription}>
+  <!-- Services Grid -->
+  <section class="bg-white relative overflow-hidden mt-4">
+    <div class="absolute top-20 left-20 w-32 h-32 bg-primary-gold/5 rounded-full blur-3xl"></div>
+    <ServicesSection />
+  </section>
+</MainLayout>

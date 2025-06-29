@@ -1,0 +1,27 @@
+import fs from 'fs';
+import path from 'path';
+
+const root = process.cwd();
+const activePath = path.join(root, 'src/icons/ativos');
+const mdiPath = path.join(root, 'src/icons/mdi');
+
+export async function getIconSVG(icon: string): Promise<string | null> {
+  const [set, name] = icon.split(':');
+
+  if (set !== 'mdi') return null; // por enquanto só suporta mdi
+
+  const target = path.join(activePath, `${name}.svg`);
+  const source = path.join(mdiPath, `${name}.svg`);
+
+  if (!fs.existsSync(target)) {
+    if (!fs.existsSync(source)) {
+      console.warn(`❌ Ícone "${icon}" não encontrado em ${source}`);
+      return null;
+    }
+
+    fs.copyFileSync(source, target);
+    console.log(`✅ Ícone copiado: ${icon} → /ativos`);
+  }
+
+  return fs.readFileSync(target, 'utf-8');
+}

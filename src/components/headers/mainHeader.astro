@@ -1,0 +1,360 @@
+---
+// Header.astro
+import { Image } from 'astro:assets';
+interface MenuItem {
+  label: string;
+  url: string;
+}
+
+interface Props {
+  logoUrl?: string;
+  ctaText?: string;
+  menuItems?: MenuItem[];
+}
+
+const {
+  ctaText = 'Agendar Consulta',
+  menuItems = [
+    { label: 'Início', url: '/' },
+    { label: 'Serviços', url: '/servicos' },
+    { label: 'Posts', url: '/blog' },
+    { label: 'Contato', url: '/contato' },
+  ],
+} = Astro.props;
+import { getMainData } from '../../data/mainData';
+
+const mainData = await getMainData();
+if (!mainData) return Astro.redirect('/404');
+
+// Importar o componente MainButton
+import MainButton from '../buttons/mainButton.astro';
+---
+
+<div class="header-wrapper">
+  <header class="fixed top-0 left-0 w-full z-50 transition-all duration-500" id="headerRef">
+    <div class="container mx-auto px-4 md:px-8 flex items-center justify-between">
+      <!-- Logo -->
+      <div class="relative z-10">
+        <a href="/" class="flex items-center">
+          <Image
+            src={mainData.logo_escura || ''}
+            alt={'logo lumino'}
+            loading="eager"
+            width="100"
+            height="20"
+            decoding="async"
+            format="webp"
+            quality="90"
+          />
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden lg:block">
+        <ul class="flex gap-10">
+          {
+            menuItems.map((item, index) => (
+              //@ts-ignore
+              <li key={index}>
+                <a
+                  href={item.url}
+                  class="relative font-medium text-base pb-1 transition-colors duration-500 group nav-link"
+                >
+                  {item.label}
+                  <span class="absolute bottom-0 left-0 w-full h-px bg-primary-gold transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <!-- CTA Button -->
+      <div class="hidden lg:block">
+        <MainButton title={ctaText} href="#contact" />
+      </div>
+      <!-- Mobile Menu Toggle -->
+      <button
+        class="relative z-50 lg:hidden flex flex-col justify-center items-center w-10 h-10"
+        id="menuToggle"
+        aria-label="Toggle Menu"
+      >
+        <span
+          class="block w-7 h-0.5 transition-all duration-500 ease-in-out bg-primary-dark"
+          id="hamburger1"></span>
+        <span
+          class="block w-7 h-0.5 transition-all duration-500 ease-in-out my-1.5 bg-primary-dark"
+          id="hamburger2"></span>
+        <span
+          class="block w-7 h-0.5 transition-all duration-500 ease-in-out bg-primary-dark"
+          id="hamburger3"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar -->
+  <div
+    class="fixed top-0 right-0 w-80 h-screen bg-white shadow-2xl transform transition-transform duration-700 ease-in-out z-[99999] translate-x-full"
+    id="sidebarRef"
+  >
+    <!-- Sidebar Header: logo + close -->
+    <div class="flex items-center justify-between px-6 py-4">
+      <Image
+        src={mainData.logo_escura || ''}
+        alt={'logo lumino'}
+        loading="eager"
+        width="100"
+        height="20"
+        decoding="async"
+        format="webp"
+        quality="90"
+      />
+      <button
+        id="closeMenu"
+        aria-label="Fechar menu"
+        class="text-2xl font-bold cursor-pointer text-primary-dark hover:text-primary-gold transition-colors duration-300"
+      >
+        &times;
+      </button>
+    </div>
+
+    <div class="flex flex-col h-full pt-4 pb-8 px-8">
+      <!-- Mobile Navigation -->
+      <ul class="flex flex-col gap-6">
+        {
+          menuItems.map((item, index) => (
+            // @ts-ignore
+            <li key={index} class="mobile-menu-item">
+              <a
+                href={item.url}
+                class="relative font-medium text-lg cursor-pointer pb-1 text-primary-dark hover:text-primary-gold transition-colors duration-300 inline-block group mobile-menu-link"
+              >
+                {item.label}
+                <span class="absolute bottom-0 left-0 w-0 h-px bg-primary-gold transition-all duration-300 group-hover:w-full" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <!-- Mobile CTA Button -->
+      <div class="mt-8">
+        <MainButton
+          id="mobileCta"
+          class="2xl:!text-sm text-xs !block lg:!hidden mt-8 mobile-cta"
+          title={ctaText}
+          href="#contact"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay para fechar ao clicar fora -->
+  <div
+    class="fixed inset-0 bg-black/50 z-[9999] transition-opacity duration-500 opacity-0 pointer-events-none"
+    id="overlay"
+  >
+  </div>
+</div>
+
+<style scoped>
+  /* Container wrapper */
+  .header-wrapper {
+    position: relative;
+  }
+
+  /* Garante que o header fique acima de tudo */
+  header {
+    isolation: isolate;
+  }
+
+  /* Fix para mobile hamburger */
+  @media (max-width: 1024px) {
+    .translate-x-full {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Estilo para o overlay em tela cheia */
+  .fixed.inset-0 {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+</style>
+
+<script is:inline>
+  // Importar GSAP
+  import { gsap } from 'gsap';
+
+  // Reactive state (equivalente aos ref() do Vue)
+  let isMenuOpen = false;
+  let isScrolled = false;
+
+  // Elementos DOM (equivalente aos ref do template)
+  const headerRef = document.getElementById('headerRef');
+  const sidebarRef = document.getElementById('sidebarRef');
+  const menuToggle = document.getElementById('menuToggle');
+  const closeMenuBtn = document.getElementById('closeMenu');
+  const overlay = document.getElementById('overlay');
+  const hamburger1 = document.getElementById('hamburger1');
+  const hamburger2 = document.getElementById('hamburger2');
+  const hamburger3 = document.getElementById('hamburger3');
+  const mobileMenuLinks = document.querySelectorAll('.mobile-menu-link');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  // Função para atualizar classes baseadas no estado (equivalente ao :class do Vue)
+  const updateHeaderClasses = () => {
+    if (isScrolled) {
+      headerRef?.classList.add('bg-white', 'shadow-lg');
+      headerRef?.classList.remove('bg-transparent');
+
+      // Atualizar classes dos nav links
+      navLinks.forEach((link) => {
+        link.classList.add('hover:text-primary-gold');
+        link.classList.remove('text-primary-dark', 'hover:text-primary-gold');
+      });
+    } else {
+      headerRef?.classList.remove('bg-white', 'shadow-lg');
+      headerRef?.classList.add('bg-transparent');
+
+      // Atualizar classes dos nav links
+      navLinks.forEach((link) => {
+        link.classList.add('text-primary-dark', 'hover:text-primary-gold');
+      });
+    }
+  };
+
+  const updateMenuClasses = () => {
+    if (isMenuOpen) {
+      // Sidebar
+      sidebarRef?.classList.remove('translate-x-full');
+      sidebarRef?.classList.add('translate-x-0');
+
+      // Overlay
+      overlay?.classList.remove('opacity-0', 'pointer-events-none');
+      overlay?.classList.add('opacity-100', 'pointer-events-auto');
+
+      // Hamburger animations (equivalente ao :class condicional do Vue)
+      hamburger1?.classList.add('rotate-45', 'translate-y-2');
+      hamburger1?.classList.remove('bg-primary-dark');
+      hamburger1?.classList.add('bg-primary-dark');
+
+      hamburger2?.classList.add('opacity-0');
+      hamburger2?.classList.remove('bg-primary-dark');
+      hamburger2?.classList.add('bg-primary-dark');
+
+      hamburger3?.classList.add('-rotate-45', '-translate-y-2');
+      hamburger3?.classList.remove('bg-primary-dark');
+      hamburger3?.classList.add('bg-primary-dark');
+    } else {
+      // Sidebar
+      sidebarRef?.classList.add('translate-x-full');
+      sidebarRef?.classList.remove('translate-x-0');
+
+      // Overlay
+      overlay?.classList.add('opacity-0', 'pointer-events-none');
+      overlay?.classList.remove('opacity-100', 'pointer-events-auto');
+
+      // Reset hamburger
+      hamburger1?.classList.remove('rotate-45', 'translate-y-2');
+      hamburger2?.classList.remove('opacity-0');
+      hamburger3?.classList.remove('-rotate-45', '-translate-y-2');
+    }
+  };
+
+  // Equivalente ao toggleMenu do Vue
+  const toggleMenu = () => {
+    isMenuOpen = !isMenuOpen;
+    updateMenuClasses();
+
+    // Prevenir scroll quando menu está aberto
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  };
+
+  // Equivalente ao closeMenu do Vue
+  const closeMenu = () => {
+    isMenuOpen = false;
+    updateMenuClasses();
+    document.body.style.overflow = 'auto';
+  };
+
+  // Equivalente ao handleScroll do Vue
+  const handleScroll = () => {
+    isScrolled = window.scrollY > 50;
+    updateHeaderClasses();
+  };
+
+  // Equivalente ao watch(isMenuOpen) do Vue - Animação do menu mobile
+  const animateMobileMenu = () => {
+    if (isMenuOpen) {
+      // Reset das animações
+      gsap.set('.mobile-menu-item', { y: 20, opacity: 0 });
+      gsap.set('.mobile-cta', { y: 20, opacity: 0 });
+
+      // Animar itens do menu
+      gsap.to('.mobile-menu-item', {
+        y: 0,
+        opacity: 1,
+        stagger: 0.1,
+        delay: 0.2,
+        duration: 0.6,
+        ease: 'power3.out',
+      });
+
+      // Animar CTA
+      gsap.to('.mobile-cta', {
+        y: 0,
+        opacity: 1,
+        delay: 0.6,
+        duration: 0.6,
+        ease: 'power3.out',
+      });
+    }
+  };
+
+  // Event listeners (equivalente aos @click do Vue)
+  menuToggle?.addEventListener('click', () => {
+    toggleMenu();
+    // Chamar animação após o toggle
+    setTimeout(animateMobileMenu, 50);
+  });
+
+  closeMenuBtn?.addEventListener('click', closeMenu);
+  overlay?.addEventListener('click', closeMenu);
+
+  // Fechar menu ao clicar nos links (equivalente ao @click="closeMenu" do Vue)
+  mobileMenuLinks.forEach((link) => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // Scroll listener
+  window.addEventListener('scroll', handleScroll);
+
+  // Equivalente ao onMounted do Vue
+  document.addEventListener('DOMContentLoaded', async () => {
+    handleScroll(); // Chamada inicial
+
+    // Animação inicial do header
+    if (headerRef) {
+      gsap.fromTo(
+        headerRef,
+        { y: -100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
+      );
+    }
+  });
+
+  // Equivalente ao onBeforeUnmount do Vue
+  window.addEventListener('beforeunload', () => {
+    window.removeEventListener('scroll', handleScroll);
+    // Garantir que o scroll seja restaurado
+    document.body.style.overflow = 'auto';
+  });
+</script>

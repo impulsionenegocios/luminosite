@@ -1,0 +1,83 @@
+---
+// components/GallerySection.astro
+
+import { Image } from 'astro:assets';
+import Heading from '../typograph/Heading.astro';
+import Button from '../../components/buttons/mainButton.astro';
+
+interface GalleryItem {
+  id: number;
+  image: string;
+  title: string;
+  description?: string;
+}
+
+interface GalleryData {
+  title?: string;
+  description?: string;
+  items: GalleryItem[];
+}
+
+// Props vindos do Directus
+const { title, description, items } = Astro.props as GalleryData;
+
+// Limita em até 8 imagens
+const displayItems = items.slice(0, 8);
+
+// Função para extrair categoria da descrição ou usar padrão
+const getCategory = (description?: string) => {
+  // Se a descrição contém ":", usa a primeira parte como categoria
+  if (description && description.includes(':')) {
+    return description.split(':')[0].trim();
+  }
+  return 'Galeria'; // Categoria padrão
+};
+
+// Função para extrair o alt da descrição ou usar título
+const getAlt = (title: string, description?: string) => {
+  if (description && description.includes(':')) {
+    return description.split(':')[1]?.trim() || title;
+  }
+  return title;
+};
+---
+
+<section class="lg:px-20 px-8 bg-light-bg pt-16 pb-8" id="gallery">
+  <div class="shape shape-2"></div>
+  <div class="">
+    <div class="gallery-header text-center mb-12">
+      <Heading text={title || 'Nossa Galeria'} />
+      <p class="section-subtitle section-subtitle-center mt-4">
+        {description || 'Confira alguns dos nossos trabalhos realizados'}
+      </p>
+    </div>
+
+    <div class="gallery-container reveal-effect relative">
+      <div class="gallery-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {
+          displayItems.map((item) => (
+            <div class="gallery-item relative overflow-hidden">
+              <Image
+                src={item.image}
+                alt={getAlt(item.title, item.description)}
+                class="gallery-image w-full h-auto block"
+                width={800}
+                height={600}
+              />
+              <div class="gallery-overlay absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity">
+                <div class="gallery-caption flex flex-col justify-center items-center h-full text-white p-4">
+                  <h4 class="gallery-title text-lg font-semibold mb-1">{item.title}</h4>
+                  <p class="gallery-category text-sm">{getCategory(item.description)}</p>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="gallery-nav flex justify-between mt-6">
+        <Button title="Ver Galeria" href="/galeria" />
+      </div>
+    </div>
+  </div>
+</section>

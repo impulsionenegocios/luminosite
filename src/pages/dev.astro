@@ -1,0 +1,629 @@
+---
+// index.astro
+import Animations from '../components/animations/Animations.astro';
+import ParticlesBackground from '../components/animations/ParticlesBackground.astro';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumino Clínica - Odontologia de Luxo</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"
+      is:inline></script>
+  </head>
+  <body>
+    <!-- Cabeçalho -->
+    <header>
+      <div class="container header-container">
+        <div class="logo">
+          <span class="logo-mark"></span>
+          <a href="#" class="logo-text">Lumino <span class="logo-accent">Clínica</span></a>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#home">Início</a></li>
+            <li><a href="#about">Sobre Nós</a></li>
+            <li><a href="#services">Serviços</a></li>
+            <li><a href="#gallery">Galeria</a></li>
+            <li><a href="#location">Localização</a></li>
+            <li><a href="#testimonials">Depoimentos</a></li>
+          </ul>
+        </nav>
+        <a href="#contact" class="btn header-cta">Agendar Consulta</a>
+        <button class="nav-toggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </header>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="hero-shape-1"></div>
+      <div class="hero-shape-2"></div>
+      <div class="hero-bg">
+        <img src="https://placehold.co/1000x1000" alt="Lumino Clínica" class="hero-bg-image" />
+      </div>
+      <div class="container">
+        <div class="hero-content">
+          <span class="hero-subtitle">BEM-VINDO À LUMINO CLÍNICA</span>
+          <h1 class="hero-title">O sorriso perfeito que você <span class="accent">merece</span></h1>
+          <p class="hero-description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+          </p>
+          <div class="hero-buttons">
+            <a href="#services" class="btn">Nossos Serviços</a>
+            <a href="#contact" class="btn btn-outline">Agendar Consulta</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-dots">
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+      </div>
+      <div class="scroll-down">
+        <span></span>
+        <p>Scroll Down</p>
+      </div>
+    </section>
+
+    <!-- Sobre Nós -->
+    <section class="section about" id="about">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="about-line"></div>
+      <div class="container about-container">
+        <div class="about-image-wrapper reveal-effect">
+          <img
+            src="https://placehold.co/600x800"
+            alt="Sobre a Lumino Clínica"
+            class="about-image-main"
+          />
+          <div class="about-image-bg"></div>
+        </div>
+        <div class="about-content reveal-effect">
+          <h2 class="section-title">Sobre a <span class="accent">Lumino Clínica</span></h2>
+          <p class="section-subtitle">
+            Transformando sorrisos com excelência e inovação há mais de 10 anos.
+          </p>
+          <div class="about-text">
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+              ullamcorper mattis, pulvinar dapibus leo. Sed do eiusmod tempor incididunt ut labore
+              et dolore magna aliqua.
+            </p>
+            <p>
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+              ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+              cillum dolore eu fugiat nulla pariatur.
+            </p>
+          </div>
+          <div class="about-features">
+            <div class="about-feature">
+              <div class="feature-icon">✦</div>
+              <div class="feature-content">
+                <h3>Tecnologia Avançada</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="feature-icon">✦</div>
+              <div class="feature-content">
+                <h3>Equipe Especializada</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="feature-icon">✦</div>
+              <div class="feature-content">
+                <h3>Ambiente Luxuoso</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+            </div>
+            <div class="about-feature">
+              <div class="feature-icon">✦</div>
+              <div class="feature-content">
+                <h3>Atendimento Premium</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contador -->
+    <section class="counter-section">
+      <div id="counter-particles" class="counter-particles"></div>
+      <div class="container">
+        <div class="counter-grid">
+          <div class="counter-item">
+            <div class="counter-value">3500</div>
+            <div class="counter-label">Pacientes Atendidos</div>
+          </div>
+          <div class="counter-item">
+            <div class="counter-value">15</div>
+            <div class="counter-label">Especialistas</div>
+          </div>
+          <div class="counter-item">
+            <div class="counter-value">12</div>
+            <div class="counter-label">Anos de Experiência</div>
+          </div>
+          <div class="counter-item">
+            <div class="counter-value">99</div>
+            <div class="counter-label">Prêmios Conquistados</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Serviços -->
+    <section class="section services" id="services">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-3"></div>
+      <div class="container">
+        <div class="services-header">
+          <h2 class="section-title section-title-center">
+            Nossos <span class="accent">Serviços</span>
+          </h2>
+          <p class="section-subtitle section-subtitle-center">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+            ullamcorper mattis, pulvinar dapibus leo.
+          </p>
+        </div>
+        <div class="services-grid">
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Implantes Dentários" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Implantes Dentários</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Ortodontia Estética" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Ortodontia Estética</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Clareamento Dental" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Clareamento Dental</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Facetas de Porcelana" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Facetas de Porcelana</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Cirurgia Odontológica" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Cirurgia Odontológica</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+          <div class="service-card reveal-effect">
+            <div class="service-image">
+              <img src="https://placehold.co/600x400" alt="Odontologia Estética" />
+            </div>
+            <div class="service-content">
+              <div class="service-icon">✦</div>
+              <h3 class="service-title">Odontologia Estética</h3>
+              <p class="service-description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+                ullamcorper mattis.
+              </p>
+              <a href="#" class="service-link">Saiba mais</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Galeria -->
+    <section class="section gallery" id="gallery">
+      <div class="shape shape-2"></div>
+      <div class="container">
+        <div class="gallery-header">
+          <h2 class="section-title section-title-center">
+            Nossa <span class="accent">Galeria</span>
+          </h2>
+          <p class="section-subtitle section-subtitle-center">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+            ullamcorper mattis.
+          </p>
+        </div>
+        <div class="gallery-container reveal-effect">
+          <div class="gallery-grid">
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/800x600"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Recepção Moderna</h4>
+                  <p class="gallery-category">Ambiente Luxuoso</p>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/600x600"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Consultório Premium</h4>
+                  <p class="gallery-category">Tecnologia Avançada</p>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/600x600"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Atendimento VIP</h4>
+                  <p class="gallery-category">Experiência Exclusiva</p>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/800x400"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Transformação de Sorriso</h4>
+                  <p class="gallery-category">Antes e Depois</p>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/600x600"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Equipamentos Modernos</h4>
+                  <p class="gallery-category">Tecnologia de Ponta</p>
+                </div>
+              </div>
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://placehold.co/600x600"
+                alt="Galeria Lumino Clínica"
+                class="gallery-image"
+              />
+              <div class="gallery-overlay">
+                <div class="gallery-caption">
+                  <h4 class="gallery-title">Sala de Espera</h4>
+                  <p class="gallery-category">Conforto e Elegância</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="gallery-nav">
+            <div class="gallery-nav-button">←</div>
+            <div class="gallery-nav-button">→</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Localização -->
+    <section class="section location" id="location">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-3"></div>
+      <div class="container location-container">
+        <div class="location-content reveal-effect">
+          <h2 class="section-title">Nossa <span class="accent">Localização</span></h2>
+          <p class="section-subtitle">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec.
+          </p>
+          <div class="location-details">
+            <div class="location-item">
+              <div class="location-icon">📍</div>
+              <div class="location-info">
+                <h3>Endereço</h3>
+                <p>Avenida Paulista, 1000, Jardim Paulista<br />São Paulo - SP, 01310-100</p>
+              </div>
+            </div>
+            <div class="location-item">
+              <div class="location-icon">📞</div>
+              <div class="location-info">
+                <h3>Telefone</h3>
+                <p>+55 (11) 3000-0000</p>
+              </div>
+            </div>
+            <div class="location-item">
+              <div class="location-icon">✉️</div>
+              <div class="location-info">
+                <h3>E-mail</h3>
+                <p>contato@luminoclinica.com.br</p>
+              </div>
+            </div>
+          </div>
+          <div class="location-hours">
+            <h3>Horário de Funcionamento</h3>
+            <div class="hours-grid">
+              <div class="hours-day">Segunda - Sexta:</div>
+              <div class="hours-time">8:00 - 20:00</div>
+              <div class="hours-day">Sábado:</div>
+              <div class="hours-time">9:00 - 17:00</div>
+              <div class="hours-day">Domingo:</div>
+              <div class="hours-time">Fechado</div>
+            </div>
+          </div>
+        </div>
+        <div class="location-map reveal-effect">
+          <img src="https://placehold.co/800x500" alt="Mapa Lumino Clínica" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Depoimentos -->
+    <section class="section testimonials" id="testimonials">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="container">
+        <div class="testimonials-header">
+          <h2 class="section-title section-title-center">
+            O que nossos <span class="accent">Pacientes</span> dizem
+          </h2>
+          <p class="section-subtitle section-subtitle-center">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+            ullamcorper mattis.
+          </p>
+        </div>
+        <div class="testimonials-wrapper">
+          <div class="testimonials-container">
+            <div class="testimonials-grid">
+              <div class="testimonial-card reveal-effect">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus
+                  nec ullamcorper mattis, pulvinar dapibus leo. Sed do eiusmod tempor incididunt ut
+                  labore et dolore magna aliqua.
+                </p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">
+                    <img src="https://placehold.co/100x100" alt="Autor do Depoimento" />
+                  </div>
+                  <div class="testimonial-info">
+                    <h4>Ana Oliveira</h4>
+                    <p>Empresária</p>
+                    <div class="testimonial-rating">
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-card reveal-effect">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus
+                  nec ullamcorper mattis, pulvinar dapibus leo. Sed do eiusmod tempor incididunt ut
+                  labore et dolore magna aliqua.
+                </p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">
+                    <img src="https://placehold.co/100x100" alt="Autor do Depoimento" />
+                  </div>
+                  <div class="testimonial-info">
+                    <h4>Carlos Santos</h4>
+                    <p>Advogado</p>
+                    <div class="testimonial-rating">
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-card reveal-effect">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus
+                  nec ullamcorper mattis, pulvinar dapibus leo. Sed do eiusmod tempor incididunt ut
+                  labore et dolore magna aliqua.
+                </p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">
+                    <img src="https://placehold.co/100x100" alt="Autor do Depoimento" />
+                  </div>
+                  <div class="testimonial-info">
+                    <h4>Mariana Lima</h4>
+                    <p>Médica</p>
+                    <div class="testimonial-rating">
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                      <span class="testimonial-star">★</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contato CTA -->
+    <section class="contact-cta" id="contact">
+      <div class="contact-cta-shape contact-cta-shape-1"></div>
+      <div class="contact-cta-shape contact-cta-shape-2"></div>
+      <div class="container">
+        <div class="contact-cta-container">
+          <h2 class="contact-cta-title">Agende sua <span class="accent">Consulta</span></h2>
+          <p class="contact-cta-text">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+            ullamcorper mattis, pulvinar dapibus leo.
+          </p>
+          <div class="contact-cta-buttons">
+            <a href="#" class="btn">Agendar Agora</a>
+            <a href="#" class="btn btn-outline">Entre em Contato</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rodapé -->
+    <footer>
+      <div class="footer-shape footer-shape-1"></div>
+      <div class="footer-shape footer-shape-2"></div>
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-column footer-about">
+            <a href="#" class="footer-logo"
+              >Lumino <span class="footer-logo-accent">Clínica</span></a
+            >
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec
+              ullamcorper mattis, pulvinar dapibus leo.
+            </p>
+            <div class="footer-social">
+              <a href="#" class="social-icon">f</a>
+              <a href="#" class="social-icon">t</a>
+              <a href="#" class="social-icon">in</a>
+              <a href="#" class="social-icon">ig</a>
+            </div>
+          </div>
+          <div class="footer-column footer-links">
+            <h3 class="footer-heading">Links Rápidos</h3>
+            <ul>
+              <li><a href="#home">Início</a></li>
+              <li><a href="#about">Sobre Nós</a></li>
+              <li><a href="#services">Serviços</a></li>
+              <li><a href="#gallery">Galeria</a></li>
+              <li><a href="#location">Localização</a></li>
+              <li><a href="#testimonials">Depoimentos</a></li>
+            </ul>
+          </div>
+          <div class="footer-column footer-contact">
+            <h3 class="footer-heading">Contato</h3>
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">📍</div>
+              <div class="footer-contact-text">
+                Avenida Paulista, 1000, Jardim Paulista, São Paulo - SP, 01310-100
+              </div>
+            </div>
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">📞</div>
+              <div class="footer-contact-text">+55 (11) 3000-0000</div>
+            </div>
+            <div class="footer-contact-item">
+              <div class="footer-contact-icon">✉️</div>
+              <div class="footer-contact-text">contato@luminoclinica.com.br</div>
+            </div>
+          </div>
+          <div class="footer-column footer-newsletter">
+            <h3 class="footer-heading">Newsletter</h3>
+            <p>Inscreva-se para receber nossas novidades e promoções exclusivas.</p>
+            <form class="footer-newsletter-form">
+              <input type="email" placeholder="Seu e-mail" class="footer-newsletter-input" />
+              <button type="submit" class="footer-newsletter-button">→</button>
+            </form>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 Lumino Clínica. Todos os direitos reservados.</p>
+          <div class="footer-bottom-links">
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos de Uso</a>
+            <a href="#">Mapa do Site</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <Animations />
+    <ParticlesBackground />
+  </body>
+</html>

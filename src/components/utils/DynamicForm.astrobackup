@@ -1,0 +1,898 @@
+---
+// components/forms/DynamicForm.astro
+export interface Props {
+  slug: string;
+  className?: string;
+  submitButtonText?: string;
+  successMessage?: string;
+  errorMessage?: string;
+}
+
+interface FormField {
+  id: number;
+  label: string;
+  name: string;
+  type: string;
+  required: boolean;
+  options: string | null;
+  order: number;
+}
+
+interface FormData {
+  id: number;
+  title: string;
+  slug: string;
+  description: string;
+  fields: Array<{
+    form_fields_id: FormField;
+  }>;
+}
+
+const { 
+  slug, 
+  className = "", 
+  submitButtonText = "Enviar",
+  successMessage = "Formulário enviado com sucesso!",
+  errorMessage = "Erro ao enviar formulário. Tente novamente."
+} = Astro.props;
+
+const directusUrl = import.meta.env.PUBLIC_DIRECTUS_INTERNAL_URL;
+const directusPublicUrl = import.meta.env.PUBLIC_DIRECTUS_EXTERNAL_URL;
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
+
+let formData: FormData | null = null;
+let error: string | null = null;
+
+try {
+  // Busca os dados do formulário pela slug
+  const url = `${directusUrl}/items/forms?filter[slug][_eq]=${encodeURIComponent(slug)}&fields=id,title,slug,description,fields.form_fields_id.id,fields.form_fields_id.label,fields.form_fields_id.name,fields.form_fields_id.type,fields.form_fields_id.required,fields.form_fields_id.options,fields.form_fields_id.order&limit=1`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar formulário: ${response.statusText}`);
+  }
+
+  const result = await response.json();
+  
+  if (!result.data || result.data.length === 0) {
+    throw new Error(`Formulário com slug "${slug}" não encontrado`);
+  }
+
+  formData = result.data[0];
+  
+  // Ordena os campos por ordem
+  if (formData?.fields) {
+    formData.fields.sort((a, b) => a.form_fields_id.order - b.form_fields_id.order);
+  }
+  
+} catch (err) {
+  console.error('Erro ao carregar formulário:', err);
+  error = err instanceof Error ? err.message : 'Erro desconhecido';
+}
+
+// Função para renderizar campo baseado no tipo
+function getInputType(type: string): string {
+  switch (type) {
+    case 'email':
+      return 'email';
+    case 'tel':
+      return 'tel';
+    case 'number':
+      return 'number';
+    case 'password':
+      return 'password';
+    case 'url':
+      return 'url';
+    case 'date':
+      return 'date';
+    case 'time':
+      return 'time';
+    case 'datetime-local':
+      return 'datetime-local';
+    default:
+      return 'text';
+  }
+}
+
+function getPlaceholder(field: FormField): string {
+  switch (field.type) {
+    case 'email':
+      return 'exemplo@email.com';
+    case 'tel':
+      return '(11) 99999-9999';
+    case 'number':
+      return 'Digite um número';
+    case 'url':
+      return 'https://exemplo.com';
+    default:
+      return `Digite ${field.label.toLowerCase()}`;
+  }
+}
+---
+
+{error ? (
+  <div class={`form-error-container ${className}`}>
+    <div class="error-content">
+      <span class="error-icon">❌</span>
+      <p>{error}</p>
+    </div>
+  </div>
+) : formData ? (
+  <section class={`dynamic-form-section ${className}`}>
+    <div class="form-container">
+      {formData.title && (
+        <div class="form-header">
+          <h3 class="form-title">{formData.title}</h3>
+          {formData.description && (
+            <p class="form-description">{formData.description}</p>
+          )}
+        </div>
+      )}
+
+      <form 
+        id={`form-${formData.slug}`}
+        class="elegant-form"
+        data-form-slug={formData.slug}
+        data-form-id={formData.id}
+      >
+        <div class="form-fields">
+          {formData.fields.map((fieldWrapper) => {
+            const field = fieldWrapper.form_fields_id;
+            
+            return (
+              <div class="form-group reveal-effect">
+                <label for={field.name} class="field-label">
+                  {field.label}
+                  {field.required && <span class="required-mark">*</span>}
+                </label>
+
+                {field.type === 'textarea' ? (
+                  <textarea
+                    id={field.name}
+                    name={field.name}
+                    required={field.required}
+                    placeholder={getPlaceholder(field)}
+                    rows="4"
+                    class="form-textarea"
+                  ></textarea>
+                ) : field.type === 'select' && field.options ? (
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    required={field.required}
+                    class="form-select"
+                  >
+                    <option value="">Selecione uma opção</option>
+                    {field.options.split(',').map((option) => (
+                      <option value={option.trim()}>{option.trim()}</option>
+                    ))}
+                  </select>
+                ) : field.type === 'checkbox' ? (
+                  <div class="checkbox-wrapper">
+                    <input
+                      type="checkbox"
+                      id={field.name}
+                      name={field.name}
+                      required={field.required}
+                      class="form-checkbox"
+                    />
+                    <label for={field.name} class="checkbox-label">
+                      <span class="checkbox-checkmark"></span>
+                      {field.label}
+                    </label>
+                  </div>
+                ) : field.type === 'radio' && field.options ? (
+                  <div class="radio-group">
+                    {field.options.split(',').map((option, index) => (
+                      <div class="radio-wrapper">
+                        <input
+                          type="radio"
+                          id={`${field.name}_${index}`}
+                          name={field.name}
+                          value={option.trim()}
+                          required={field.required}
+                          class="form-radio"
+                        />
+                        <label for={`${field.name}_${index}`} class="radio-label">
+                          <span class="radio-checkmark"></span>
+                          {option.trim()}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <input
+                    type={getInputType(field.type)}
+                    id={field.name}
+                    name={field.name}
+                    required={field.required}
+                    placeholder={getPlaceholder(field)}
+                    class="form-input"
+                  />
+                )}
+
+                <div class="field-error"></div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="submit-button">
+            <span class="submit-text">{submitButtonText}</span>
+            <span class="loading-text">Enviando...</span>
+          </button>
+        </div>
+         <div class="recaptcha-container">
+                <div 
+                class="g-recaptcha" 
+                data-sitekey={recaptchaSiteKey}
+                data-callback="onRecaptchaSuccess"
+                data-expired-callback="onRecaptchaExpired"
+                ></div>
+                <div class="recaptcha-error"></div>
+            </div>
+        <!-- Mensagens de sucesso/erro -->
+        <div class="form-messages">
+          <div class="success-message">
+            <div class="message-content">
+              <span class="message-icon">✅</span>
+              <p>{successMessage}</p>
+            </div>
+          </div>
+          <div class="error-message">
+            <div class="message-content">
+              <span class="message-icon">❌</span>
+              <p class="error-text">{errorMessage}</p>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+) : (
+  <div class={`form-loading-container ${className}`}>
+    <div class="loading-content">
+      <span class="loading-icon">📝</span>
+      <p>Carregando formulário...</p>
+    </div>
+  </div>
+)}
+
+
+<!-- Script atualizado com reCAPTCHA: -->
+<script is:inline define:vars={{ directusPublicUrl }}>
+// Funções globais para o reCAPTCHA
+window.onRecaptchaSuccess = function(token) {
+  document.querySelectorAll('.recaptcha-error').forEach(error => {
+    error.textContent = '';
+    error.classList.remove('show');
+  });
+};
+
+window.onRecaptchaExpired = function() {
+  document.querySelectorAll('.recaptcha-error').forEach(error => {
+    error.textContent = 'reCAPTCHA expirou. Por favor, tente novamente.';
+    error.classList.add('show');
+  });
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.elegant-form').forEach(form => {
+    const formSlug = form.getAttribute('data-form-slug');
+    const formId = form.getAttribute('data-form-id');
+    const submitButton = form.querySelector('.submit-button');
+    const submitText = form.querySelector('.submit-text');
+    const loadingText = form.querySelector('.loading-text');
+    const successMessage = form.querySelector('.success-message');
+    const errorMessage = form.querySelector('.error-message');
+    const errorText = form.querySelector('.error-text');
+    const recaptchaError = form.querySelector('.recaptcha-error');
+
+    if (!formSlug || !submitButton) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Reset mensagens anteriores
+      hideMessages();
+      clearFieldErrors();
+      
+      // Validação básica
+      if (!validateForm(form)) {
+        return;
+      }
+      
+      // Verifica reCAPTCHA
+      const recaptchaResponse = grecaptcha.getResponse();
+      if (!recaptchaResponse) {
+        showRecaptchaError('Por favor, complete a verificação reCAPTCHA.');
+        return;
+      }
+      
+      // Estado de loading
+      setLoadingState(true);
+      
+      try {
+        // Coleta dados do formulário
+        const formData = new FormData(form);
+        const formFields = Object.fromEntries(formData.entries());
+        
+        // Monta o payload com todos os dados do formulário
+        const payload = {
+          ...formFields,
+          form_slug: formSlug,
+          submitted_at: new Date().toISOString(),
+          user_agent: navigator.userAgent,
+          page_url: window.location.href,
+          recaptcha_token: recaptchaResponse
+        };
+        
+        // Estrutura final para o Directus
+        const data = {
+          form_id: parseInt(formId),
+          payload: payload
+        };
+        
+        // Envia para o Directus
+        const response = await fetch(`${directusPublicUrl}/items/form_responses`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.errors?.[0]?.message || 'Erro ao enviar formulário');
+        }
+        
+        // Sucesso
+        showSuccessMessage();
+        form.reset();
+        grecaptcha.reset(); // Reset do reCAPTCHA
+        
+      } catch (error) {
+        console.error('Erro ao enviar formulário:', error);
+        showErrorMessage(error.message);
+        grecaptcha.reset(); // Reset do reCAPTCHA em caso de erro
+      } finally {
+        setLoadingState(false);
+      }
+    });
+    
+    function validateForm(form) {
+      let isValid = true;
+      
+      // Valida campos obrigatórios
+      form.querySelectorAll('[required]').forEach(field => {
+        if (!field.value.trim()) {
+          showFieldError(field, 'Este campo é obrigatório');
+          isValid = false;
+        } else if (field.type === 'email' && !isValidEmail(field.value)) {
+          showFieldError(field, 'Por favor, insira um email válido');
+          isValid = false;
+        } else if (field.type === 'tel' && !isValidPhone(field.value)) {
+          showFieldError(field, 'Por favor, insira um telefone válido');
+          isValid = false;
+        }
+      });
+      
+      return isValid;
+    }
+    
+    function showFieldError(field, message) {
+      const errorDiv = field.closest('.form-group').querySelector('.field-error');
+      if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.add('show');
+      }
+      field.classList.add('error');
+    }
+    
+    function clearFieldErrors() {
+      form.querySelectorAll('.field-error').forEach(error => {
+        error.classList.remove('show');
+        error.textContent = '';
+      });
+      form.querySelectorAll('input, select, textarea').forEach(field => {
+        field.classList.remove('error');
+      });
+      // Limpa erro do reCAPTCHA também
+      recaptchaError.textContent = '';
+      recaptchaError.classList.remove('show');
+    }
+    
+    function showRecaptchaError(message) {
+      recaptchaError.textContent = message;
+      recaptchaError.classList.add('show');
+    }
+    
+    function setLoadingState(loading) {
+      if (loading) {
+        submitButton.disabled = true;
+        submitButton.classList.add('loading');
+        submitText.style.opacity = '0';
+        loadingText.style.opacity = '1';
+      } else {
+        submitButton.disabled = false;
+        submitButton.classList.remove('loading');
+        submitText.style.opacity = '1';
+        loadingText.style.opacity = '0';
+      }
+    }
+    
+    function hideMessages() {
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+    }
+    
+    function showSuccessMessage() {
+      successMessage.classList.add('show');
+      errorMessage.classList.remove('show');
+    }
+    
+    function showErrorMessage(message) {
+      errorText.textContent = message;
+      errorMessage.classList.add('show');
+      successMessage.classList.remove('show');
+    }
+    
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+    
+    function isValidPhone(phone) {
+      const phoneRegex = /^[\d\s\(\)\-\+]{10,}$/;
+      return phoneRegex.test(phone.replace(/\D/g, ''));
+    }
+  });
+});
+</script>
+<style>
+/* Container principal */
+.dynamic-form-section {
+  background: #fff;
+  padding: 3rem 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.dynamic-form-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-gold, #D4AF37), var(--primary-gold, #D4AF37));
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Header do formulário */
+.form-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.form-title {
+  font-family: 'Cormorant', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-dark, #1a1a1a);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.form-description {
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Campos do formulário */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-group {
+  position: relative;
+}
+
+.field-label {
+  display: block;
+  font-weight: 600;
+  color: var(--primary-dark, #1a1a1a);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  letter-spacing: 0.025em;
+}
+
+.required-mark {
+  color: #e74c3c;
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+/* Inputs gerais */
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1), 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Estados de erro */
+.form-input.error,
+.form-textarea.error,
+.form-select.error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.field-error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.field-error.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Checkbox customizado */
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.form-checkbox {
+  display: none;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--primary-dark, #1a1a1a);
+}
+
+.checkbox-checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.form-checkbox:checked + .checkbox-label .checkbox-checkmark {
+  background: var(--primary-gold, #D4AF37);
+  border-color: var(--primary-gold, #D4AF37);
+}
+
+.form-checkbox:checked + .checkbox-label .checkbox-checkmark::after {
+  content: '✓';
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* Radio customizado */
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.radio-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-radio {
+  display: none;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--primary-dark, #1a1a1a);
+}
+
+.radio-checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e1e5e9;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.form-radio:checked + .radio-label .radio-checkmark {
+  border-color: var(--primary-gold, #D4AF37);
+}
+
+.form-radio:checked + .radio-label .radio-checkmark::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: var(--primary-gold, #D4AF37);
+  border-radius: 50%;
+}
+
+/* Botão de envio */
+.form-actions {
+  margin-top: 3rem;
+}
+
+.submit-button {
+  width: 100%;
+  background: linear-gradient(135deg, var(--primary-gold, #D4AF37), #B8941F);
+  color: white;
+  border: none;
+  padding: 1.25rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.submit-button .loading-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.submit-button .submit-text {
+  transition: opacity 0.3s ease;
+}
+
+/* Mensagens */
+.form-messages {
+  margin-top: 2rem;
+}
+
+.success-message,
+.error-message {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 1rem;
+}
+
+.success-message.show,
+.error-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.success-message {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  border: 2px solid #b8dabc;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #f8d7da, #f1aeb5);
+  border: 2px solid #f1aeb5;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.message-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.message-icon {
+  font-size: 1.25rem;
+}
+
+.success-message p {
+  color: #155724;
+  font-weight: 500;
+  margin: 0;
+}
+
+.error-message p {
+  color: #721c24;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Estados de loading e erro */
+.form-error-container,
+.form-loading-container {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.error-content,
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #666;
+}
+
+.error-icon,
+.loading-icon {
+  font-size: 1.5rem;
+}
+
+/* Animações reveal */
+.reveal-effect {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: revealUp 0.6s ease forwards;
+}
+
+.reveal-effect:nth-child(1) { animation-delay: 0.1s; }
+.reveal-effect:nth-child(2) { animation-delay: 0.2s; }
+.reveal-effect:nth-child(3) { animation-delay: 0.3s; }
+.reveal-effect:nth-child(4) { animation-delay: 0.4s; }
+.reveal-effect:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes revealUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .dynamic-form-section {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+    border-radius: 1rem;
+  }
+  
+  .form-title {
+    font-size: 2rem;
+  }
+  
+  .form-description {
+    font-size: 1rem;
+  }
+  
+  .form-fields {
+    gap: 1.5rem;
+  }
+  
+  .form-input,
+  .form-textarea,
+  .form-select {
+    padding: 0.875rem 1rem;
+    font-size: 0.95rem;
+  }
+}
+.recaptcha-container {
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.g-recaptcha {
+  transform: scale(0.9);
+  transform-origin: 0 0;
+}
+
+.recaptcha-error {
+  color: #e74c3c;
+  font-size: 0.875rem;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+}
+
+.recaptcha-error.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .g-recaptcha {
+    transform: scale(0.85);
+  }
+}
+</style>

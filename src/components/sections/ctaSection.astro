@@ -1,0 +1,76 @@
+---
+import Button from '../../components/buttons/mainButton.astro';
+import {getMainData} from '../../data/mainData'
+
+const mainData = await getMainData();
+const wppLink = mainData.link_whatsapp
+console.log(wppLink)
+export interface ButtonProps {
+  label: string;
+  href: string;
+  variant?: 'solid' | 'outline';
+}
+
+interface CTAItem {
+  id: number;
+  icon: string;
+  text: string;
+}
+
+interface CTASectionData {
+  title: string;
+  description: string;
+  items: CTAItem[];
+}
+import MdiIcon from '../utils/MdiIcon.astro'
+const { title, description, items } = Astro.props as CTASectionData;
+
+// Botões mantidos estáticos por enquanto
+const buttons: ButtonProps[] = [
+  {
+    label: 'Entre em Contato',
+    href: wppLink,
+    variant: 'solid',
+  },
+  {
+    label: 'Nossos Serviços',
+    href: '#servicos',
+    variant: 'outline',
+  },
+];
+---
+
+<section class="contact-cta" id="contact">
+  <div class="counter-particles"></div>
+  <div class="contact-cta-shape contact-cta-shape-1"></div>
+  <div class="contact-cta-shape contact-cta-shape-2"></div>
+  <div class="container">
+    <div class="contact-cta-container">
+      <h2 class="contact-cta-title">
+        {title}
+      </h2>
+      <p class="contact-cta-text">
+        {description}
+      </p>
+      <div class="contact-cta-buttons">
+        {
+          buttons.map((btn) => (
+            <Button title={btn.label} href={btn.href} variant={btn.variant ?? 'solid'} />
+          ))
+        }
+      </div>
+      <div class="text-white pt-8 flex gap-4 justify-center">
+        {
+          items.map((item, index) => (
+            <MdiIcon name={item.icon}/>
+            <span>
+              
+               {item.text}
+              
+            </span>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>

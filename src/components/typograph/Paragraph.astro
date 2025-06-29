@@ -1,0 +1,15 @@
+---
+const {
+  text,
+  fontWeight = 400, // qualquer valor de 100 a 900
+  color = 'text-gray-400', // classe tailwind
+  size = 'text-regular', // opcional: text-sm, text-lg etc
+} = Astro.props;
+
+const validWeights = [100, 200, 300, 400, 500, 600, 700, 800, 900];
+const weightClass = validWeights.includes(fontWeight) ? `font-[${fontWeight}]` : 'font-normal';
+---
+
+<p class={`${weightClass} ${color} ${size} leading-[1.6]`}>
+  {text}
+</p>

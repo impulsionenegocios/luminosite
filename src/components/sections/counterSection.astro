@@ -1,0 +1,65 @@
+---
+interface CounterItem {
+  value: number;
+  description: string;
+}
+
+const { stats } = Astro.props;
+---
+
+<section class="bg-primary-dark lg:px-20 px-8 relative pt-18 overflow-hidden pb-4 2xl:pb-16">
+  <div id="counter-particles" class="counter-particles"></div>
+  <div class="mx-auto max-w-[1600px] w-full z-10">
+    <div class="lg:grid lg:grid-cols-4 relative z-2 gap-4 mx-auto">
+      {
+        stats.map((item: CounterItem) => (
+          <div class="text-center p-8">
+            <div
+              class="font-serif text-white text-5xl relative inline-block mb-4 after:content-['+'] after:absolute after:-top-4 after:right-[-20px] after:text-primary-gold"
+              data-countup
+              data-target={item.value.toString()}
+            >
+              0
+            </div>
+            <div class="uppercase text-gray-300 text-[16px]">{item.description}</div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <script>
+    const counters = document.querySelectorAll('[data-countup]');
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            const target = parseInt(el.dataset.target || '0', 10);
+            const duration = 1200;
+            const startTime = performance.now();
+
+            const animate = (now: DOMHighResTimeStamp) => {
+              const elapsed = now - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const current = Math.floor(progress * target);
+              el.textContent = current.toString();
+
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                el.textContent = target.toString();
+                observer.unobserve(el);
+              }
+            };
+
+            requestAnimationFrame(animate);
+          }
+        });
+      },
+      { threshold: 0.6 },
+    );
+
+    counters.forEach((el) => observer.observe(el));
+  </script>
+</section>

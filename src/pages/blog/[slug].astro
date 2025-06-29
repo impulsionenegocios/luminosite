@@ -1,0 +1,383 @@
+---
+// pages/blog/[slug].astro
+
+import { Image } from 'astro:assets';
+import MainLayout from '../../layouts/mainLayout.astro';
+import Heading from '../../components/typograph/Heading.astro';
+import Paragraph from '../../components/typograph/Paragraph.astro';
+import { getBlogPostBySlug, getRelatedPosts, getCategories, type blogData } from '../../data/blogData';
+import {getButtons} from '../../data/buttonsData';
+import MdiIcon from '../../components/utils/MdiIcon.astro';
+
+export async function getStaticPaths() {
+  // Deixe em branco para usar SSR ou implemente para SSG
+  return [];
+}
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/blog');
+}
+
+const post = await getBlogPostBySlug(slug);
+const buttons = await getButtons('post');
+
+if (!post) {
+  return Astro.redirect('/blog');
+}
+
+const relatedPosts = await getRelatedPosts(post.slug, post.category, post.tags, 3);
+const categories = await getCategories();
+
+// Dados para a página
+const pageTitle = `${post.title} | Lumino Clínica`;
+const pageDescription = post.excerpt;
+---
+
+<MainLayout title={pageTitle} description={pageDescription}>
+  <!-- Breadcrumb Section -->
+  <section class="bg-light-bg pt-32 pb-8 relative overflow-hidden" id="postHeader">
+    <!-- Shapes decorativas -->
+    <div class="absolute z-0 w-[200px] h-[200px] rounded-full bg-primary-gold/5 -top-24 -right-24"></div>
+    
+    <div class="container relative z-10">
+      <nav class="flex items-center text-sm text-gray-text mb-4 reveal-effect">
+        <a href="/" class="hover:text-primary-gold transition-colors duration-300">Home</a>
+        <span class="mx-2">›</span>
+        <a href="/blog" class="hover:text-primary-gold transition-colors duration-300">Blog</a>
+        <span class="mx-2">›</span>
+        <span class="text-primary-dark">{post.title}</span>
+      </nav>
+      
+      <!-- Categoria -->
+      <div class="reveal-effect mb-4">
+        <span class="inline-block bg-primary-gold text-white px-4 py-2 rounded-full text-sm font-medium">
+          {post.category}
+        </span>
+      </div>
+      
+      <!-- Título -->
+      <div class="reveal-effect">
+        <h1 class="font-cormorant text-4xl md:text-5xl lg:text-6xl font-semibold text-primary-dark leading-tight max-w-4xl">
+          {post.title}
+        </h1>
+      </div>
+      
+      <!-- Meta informações -->
+      <div class="flex flex-wrap items-center gap-6 mt-6 text-gray-text reveal-effect">
+        <div class="flex items-center gap-3">
+          <Image
+            src={post.authorImage}
+            alt={post.author || 'foto do autor'}
+            width={48}
+            height={48}
+            loading="lazy"
+            format="webp"
+            decoding="async"
+            class="w-12 h-12 rounded-full object-cover"
+          />
+          <div>
+            <p class="font-medium text-primary-dark">{post.author}</p>
+            <p class="text-sm">Autor</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4 text-sm">
+          <span class="flex items-center gap-2">
+            <span>📅</span>
+            {post.publishDate}
+          </span>
+          <span class="flex items-center gap-2">
+            <span>⏱️</span>
+            {post.readTime}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Post Content -->
+  <section class="py-16 relative overflow-hidden" id="postContent">
+    <!-- Linha decorativa -->
+    <div class="absolute top-[10%] left-[5%] w-[1px] h-[80%] bg-gradient-to-b from-transparent via-primary-gold to-transparent"></div>
+    <div class="absolute bottom-[20%] right-[8%] w-[1px] h-[40%] bg-gradient-to-b from-transparent via-primary-gold/20 to-transparent"></div>
+    
+    <div class="container relative z-10">
+      <div class="grid lg:grid-cols-12 gap-12">
+        <!-- Conteúdo Principal -->
+        <article class="lg:col-span-8">
+          <!-- Imagem Principal -->
+          <div class="reveal-effect mb-8">
+            <div class="relative rounded-3xl overflow-hidden shadow-2xl">
+              <Image
+                src={post.image}
+                alt={post.title || 'imagem de destaque'}
+                width={800}
+                height={500}
+                loading="lazy"
+                decoding="async"
+                format="webp"
+                class="w-full h-auto aspect-video object-cover"
+              />
+              <!-- Overlay sutil -->
+              <div class="absolute inset-0 bg-gradient-to-t from-primary-dark/10 to-transparent"></div>
+            </div>
+          </div>
+          
+          <!-- Tags -->
+          <div class="reveal-effect mb-8">
+            <div class="flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span class="bg-light-bg text-primary-dark px-3 py-1 rounded-full text-sm font-medium hover:bg-primary-gold hover:text-white transition-colors duration-300 cursor-pointer">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          <!-- Conteúdo do Post -->
+          <div class="reveal-effect prose prose-lg max-w-none">
+            <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+              <!-- Excerpt destacado -->
+              <div class="bg-light-bg rounded-xl p-6 mb-8 border-l-4 border-primary-gold">
+                <p class="text-lg font-light text-gray-700 italic leading-relaxed">
+                  {post.excerpt}
+                </p>
+              </div>
+              
+              <!-- Conteúdo principal -->
+              <div class="blog-content text-gray-700 leading-relaxed space-y-6" set:html={post.content}>
+                <!-- O conteúdo será inserido aqui via set:html -->
+              </div>
+            </div>
+          </div>
+          
+          <!-- Compartilhar -->
+          <div class="reveal-effect mt-12 p-8 bg-light-bg rounded-2xl">
+            <h3 class="font-cormorant text-2xl font-semibold text-primary-dark mb-4">
+              Compartilhe este artigo
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <a 
+                href={`https://wa.me/?text=${encodeURIComponent(post.title + ' - ' + Astro.url.href)}`}
+                class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-full hover:bg-green-600 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span><MdiIcon name='mdi:whatsapp' size={32}  className="mx-auto" /></span>
+                WhatsApp
+              </a>
+              <a 
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(Astro.url.href)}`}
+                class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                  <span><MdiIcon name='mdi:facebook' size={32}  className="mx-auto" /></span>
+                Facebook
+              </a>
+              <a 
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(Astro.url.href)}`}
+                class="flex items-center gap-2 bg-sky-500 text-white px-4 py-2 rounded-full hover:bg-sky-600 transition-colors duration-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                 <span><MdiIcon name='mdi:twitter' size={32}  className="mx-auto" /></span>
+                Twitter
+              </a>
+              <button 
+                onclick={`navigator.clipboard.writeText('${Astro.url.href}'); this.innerHTML='<span>✅</span>Copiado!'; setTimeout(() => this.innerHTML='<span>🔗</span>Copiar Link', 2000)`}
+                class="flex items-center gap-2 bg-gray-600 text-white px-4 py-2 rounded-full hover:bg-gray-700 transition-colors duration-300"
+              >
+                 <span><MdiIcon name='mdi:content-copy' size={32}  className="mx-auto" /></span>
+                Copiar Link
+              </button>
+            </div>
+          </div>
+        </article>
+        
+        <!-- Sidebar -->
+        <aside class="lg:col-span-4">
+          <div class="sticky top-32 space-y-8">
+            <!-- Sobre o Autor -->
+            <div class="reveal-effect bg-white rounded-2xl p-6 shadow-sm">
+              <h3 class="font-cormorant text-xl font-semibold text-primary-dark mb-4">
+                Sobre o Autor
+              </h3>
+              <div class="flex items-start gap-4">
+                <Image
+                  src={post.authorImage}
+                  alt={post.author || 'foto do autor'}
+                  width={80}
+                  height={80}
+                  decoding="async"
+                  loading="lazy"
+                  format="webp"
+                  class="w-20 h-20 rounded-full object-cover"
+                />
+                <div>
+                  <h4 class="font-semibold text-primary-dark mb-2">{post.author}</h4>
+                  <p class="text-gray-text text-sm leading-relaxed">
+                    {post.authorBio}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+          
+            
+            <!-- Categorias Populares -->
+            <!-- <div class="reveal-effect bg-white rounded-2xl p-6 shadow-sm">
+              <h3 class="font-cormorant text-xl font-semibold text-primary-dark mb-4">
+                Categorias
+              </h3>
+              <div class="space-y-2">
+                {categories.map((category) => (
+                  <a 
+                    href={`/blog/categoria/${category.slug}`}
+                    class="block py-2 px-3 text-gray-text hover:text-primary-gold hover:bg-light-bg rounded-lg transition-all duration-300"
+                  >
+                    {category.name}
+                  </a>
+                ))}
+              </div>
+            </div> -->
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Posts Relacionados -->
+  {relatedPosts.length > 0 && (
+    <section class="bg-light-bg py-16 relative overflow-hidden" id="relationatedPosts">
+      <!-- Shapes decorativas -->
+      <div class="absolute z-0 w-[300px] h-[300px] rounded-full bg-primary-dark/5 -top-36 -right-36"></div>
+      
+      <div class="container relative z-10">
+        <div class="text-center mb-12 reveal-effect">
+          <Heading text="Artigos" accent="Relacionados" />
+          <div class="mt-4">
+            <Paragraph fontWeight="300" text="Continue explorando nossos conteúdos sobre estética e bem-estar" />
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {relatedPosts.map((relatedPost, index) => (
+            <div class="blog-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-3 reveal-effect group">
+              <div class="relative h-48 overflow-hidden">
+                <Image
+                  src={relatedPost.image}
+                  alt={relatedPost.title}
+                  width={400}
+                  height={250}
+                  loading="lazy"
+                  decoding="async"
+                  format="webp"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div class="absolute top-3 left-3 bg-primary-gold text-white px-3 py-1 rounded-full text-xs font-medium">
+                  {relatedPost.category}
+                </div>
+              </div>
+              
+              <div class="p-6">
+                <h4 class="font-cormorant text-xl font-semibold text-primary-dark mb-3 leading-tight group-hover:text-primary-gold transition-colors duration-300">
+                  {relatedPost.title}
+                </h4>
+                <p class="text-gray-text text-sm leading-relaxed mb-4 font-light line-clamp-3">
+                  {relatedPost.excerpt}
+                </p>
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <span class="text-xs text-gray-text">{relatedPost.publishDate}</span>
+                  <a 
+                    href={`/blog/${relatedPost.slug}`}
+                    class="text-primary-gold hover:text-primary-dark transition-colors duration-300 font-medium text-sm"
+                  >
+                    Ler →
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+</MainLayout>
+
+<style is:global>
+  #relationatedPosts {
+    zoom: 0.9
+  }
+  #postHeader {
+    zoom: 0.9
+  }
+  #postContent {
+    zoom: 0.9
+  }
+  .blog-content {
+    font-family: 'Montserrat', sans-serif;
+  }
+  
+  .blog-content h2,
+  .blog-content h3,
+  .blog-content h4 {
+    font-family: 'Cormorant', serif;
+    color: var(--primary-dark);
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .blog-content h2 {
+    font-size: 2rem;
+  }
+  
+  .blog-content h3 {
+    font-size: 1.5rem;
+  }
+  
+  .blog-content h4 {
+    font-size: 1.25rem;
+  }
+  
+  .blog-content p {
+    margin-bottom: 1.5rem;
+    line-height: 1.8;
+  }
+  
+  .blog-content ul,
+  .blog-content ol {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+  }
+  
+  .blog-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+  }
+  
+  .blog-content blockquote {
+    border-left: 4px solid var(--primary-gold);
+    background: var(--light-bg);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0.5rem;
+    font-style: italic;
+  }
+  
+  .blog-content strong {
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

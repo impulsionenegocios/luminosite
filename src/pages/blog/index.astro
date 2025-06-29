@@ -1,0 +1,15 @@
+---
+import MainLayout from '../../layouts/mainLayout.astro';
+import { getBlogPosts } from '../../data/blogData';
+import BlogSection from '../../components/sections/blogSection.astro';
+const blogPosts = await getBlogPosts();
+const blogData = {
+  posts: blogPosts,
+};
+---
+
+<MainLayout title="Blog">
+  <section class="bg-white relative overflow-hidden mt-4" id="blog">
+    <BlogSection {...blogData} />
+  </section>
+</MainLayout>

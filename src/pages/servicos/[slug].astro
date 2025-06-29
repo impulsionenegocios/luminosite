@@ -1,0 +1,487 @@
+---
+import { Image } from 'astro:assets';
+import MainLayout from '../../layouts/mainLayout.astro';
+import Button from '../../components/buttons/mainButton.astro';
+import DotsShape from '../../components/shapes/dotsShape.astro';
+import Heading from '../../components/typograph/Heading.astro';
+import Paragraph from '../../components/typograph/Paragraph.astro';
+import { getServiceBySlug, getServicePaths } from '../../data/servicesData';
+import { getMainData } from '../../data/mainData';
+import MdiIcon from '../../components/utils/MdiIcon.astro';
+
+export async function getStaticPaths() {
+  try {
+    const paths = await getServicePaths();
+    return paths;
+  } catch {
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+
+let serviceData = null;
+try {
+  serviceData = await getServiceBySlug(slug);
+} catch {
+  return Astro.redirect('/404');
+}
+
+if (!serviceData) return Astro.redirect('/404');
+
+let mainData = null;
+try {
+  mainData = await getMainData();
+} catch {
+  throw new Error('Erro ao buscar dados da clínica');
+}
+
+const serviceName = serviceData.service_name;
+const message = `Olá, tudo bem? Vim do site e queria saber mais sobre ${serviceData.service_name}`;
+const encodedMessage = encodeURIComponent(message);
+
+const whatsappLink = `https://wa.me/${mainData?.whatsapp}?text=${encodedMessage}`;
+const contactLink = serviceData.YayFormsId ? '#contact' : whatsappLink;
+
+const metaTitle = `${serviceData.heroTitle} | ${mainData?.nome}`;
+const metaDescription = serviceData.heroDescription;
+---
+
+<MainLayout title={metaTitle} description={metaDescription}>
+  <!-- Hero Section -->
+  <section class="h-[100vh] bg-white flex items-center overflow-hidden relative" id="hero-bg">
+    <div class="hero-bg">
+      {
+        serviceData.heroImage && (
+          <Image
+            src={serviceData.heroImage}
+            alt={serviceData.heroTitle}
+            class="hero-bg-image"
+            loading="eager"
+            width="1920"
+            height="1080"
+            decoding="async"
+            format="webp"
+            quality="90"
+          />
+        )
+      }
+    </div>
+    <div class="counter-particles"></div>
+    <div class="mx-auto max-w-[1600px] lg:pl-40 w-full z-10">
+      <div class="lg:w-[50%] px-8 lg:px-0 z-3">
+        <span class="text-primary-gold font-bold animate-subtitle">
+          {serviceData.heroSubtitle}
+        </span>
+        <br />
+
+        <Heading text={serviceData.heroTitle} accent={serviceData.heroTitleAccent} />
+        <p class="text-xs text-gray-600 animate-description mt-6 leading-relaxed">
+          {serviceData.heroDescription}
+        </p>
+        <div class="flex flex-col lg:flex-row gap-4 animate-buttons mt-8">
+          <Button title="Quero agendar minha avaliação" href={contactLink} />
+          <Button title="Saber Mais" href="#for-who" variant="outline" />
+        </div>
+      </div>
+      <DotsShape />
+      <div class="scroll-down !bottom-[20px]">
+        <span>&nbsp;</span>
+        <p>Deslize para baixo</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Para quem é -->
+  {
+    serviceData.forWho && serviceData.forWho.length > 0 && (
+      <section class="px-8 lg:px-16 py-8 lg:py-16 bg-white" id="for-who">
+        <div>
+          <div class="text-center mb-16">
+            <h2 class="section-title section-title-center">
+              É pra <span class="accent">você que...</span>
+            </h2>
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {serviceData.forWho.map((item) => (
+              <div class="text-center reveal-effect">
+                <div class="w-24 h-24 mx-auto mb-6 bg-light-bg rounded-2xl flex items-center justify-center hover:bg-primary-gold hover:text-white transition-all duration-500 transform hover:-translate-y-2">
+                  <MdiIcon name={item.icon || ''} size={32} className="mx-auto" />
+                </div>
+                <p class="text-gray-700 font-medium">{item.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Benefícios -->
+  {
+    serviceData.benefits && serviceData.benefits.length > 0 && (
+      <section class="bg-primary-dark text-white px-8 lg:px-16 py-8 lg:py-16" id="beneficios">
+        <div class="shape shape-3" />
+        <div>
+          <div class="text-center mb-16">
+            <Heading
+              text={serviceData.benefitsTitle}
+              accent={serviceData.benefitsTitleAccent}
+              color="white"
+            />
+            {serviceData.benefitsDescription && (
+              <p class="section-subtitle section-subtitle-center text-white/70">
+                {serviceData.benefitsDescription}
+              </p>
+            )}
+          </div>
+
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {serviceData.benefits.map((benefit) => (
+              <div class="text-center reveal-effect group cursor-pointer">
+                <div class="w-20 h-20 mx-auto mb-6 bg-white/10 rounded-2xl flex items-center justify-center text-3xl group-hover:bg-primary-gold transition-all duration-500 transform group-hover:scale-110">
+                  <MdiIcon name={benefit.icon || ''} size={32} className="mx-auto" />
+                </div>
+                <h3 class="text-xl font-bold mb-2 text-primary-gold">{benefit.title}</h3>
+                <p class="text-white/80">{benefit.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Casos Reais (Galeria) - CORRIGIDO -->
+  {
+    serviceData.casesBeforeAfter && serviceData.casesBeforeAfter.length > 0 ? (
+      <section class="bg-light-bg px-8 lg:px-16 py-8 lg:py-16" id="casos">
+        <div class="shape shape-2" />
+        <div>
+          <div class="gallery-header text-center mb-12">
+            <Heading text={serviceData.casesTitle} accent={serviceData.casesTitleAccent} />
+            {serviceData.casesDescription && (
+              <p class="section-subtitle section-subtitle-center">{serviceData.casesDescription}</p>
+            )}
+          </div>
+
+          <div class="gallery-container reveal-effect">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+              {serviceData.casesBeforeAfter.map((caseItem, index) => (
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <div class="grid grid-cols-2 h-80">
+                    {/* Imagem ANTES */}
+                    <div class="relative overflow-hidden">
+                      {caseItem.before ? (
+                        <img
+                          src={caseItem.before}
+                          alt={`Antes do tratamento - ${caseItem.title}`}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span class="text-gray-400">Sem imagem</span>
+                        </div>
+                      )}
+                      <div class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                        ANTES
+                      </div>
+                    </div>
+
+                    {/* Imagem DEPOIS */}
+                    <div class="relative overflow-hidden">
+                      {caseItem.after ? (
+                        <img
+                          src={caseItem.after}
+                          alt={`Depois do tratamento - ${caseItem.title}`}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span class="text-gray-400">Sem imagem</span>
+                        </div>
+                      )}
+                      <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                        DEPOIS
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Informações do caso */}
+                  <div class="p-6">
+                    <h4 class="font-bold text-lg text-primary-dark mb-2">{caseItem.title}</h4>
+                    <p class="text-gray-600 text-sm">{caseItem.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div class="text-center mt-12">
+              <Button title={serviceData.CasesButtonTitle} href={contactLink} />
+            </div>
+          </div>
+        </div>
+      </section>
+    ) : (
+      <section class="bg-light-bg px-8 lg:px-16 py-8 lg:py-16" id="casos">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold text-primary-dark mb-4">Casos de Sucesso em Breve</h2>
+          <p class="text-gray-600 mb-8">
+            Estamos preparando uma galeria incrível com nossos casos de sucesso.
+          </p>
+          <Button title="Entre em contato para ver casos" href={contactLink} />
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Autoridade e Confiança -->
+  {
+    serviceData.authTitle && serviceData.authTitleAccent && (
+      <section class="bg-white px-8 lg:px-16 py-8 lg:py-16" id="sobre-nos">
+        <div>
+          <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal-effect">
+              <Heading text={serviceData.authTitle} accent={serviceData.authTitleAccent} />
+              <Paragraph text={serviceData.authDescription} />
+
+              {serviceData.authItems && serviceData.authItems.length > 0 && (
+                <div class="grid grid-cols-3 gap-8 mt-8">
+                  {serviceData.authItems.map((item) => (
+                    <div class="text-center">
+                      <div class="text-4xl font-bold text-primary-gold mb-2">{item.value}</div>
+                      <p class="text-sm text-gray-600">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div class="relative reveal-effect">
+              {serviceData.authFeaturedImage && (
+                <Image
+                  src={serviceData.authFeaturedImage}
+                  alt="Equipe Lúmino Clínica"
+                  width="400"
+                  height="400"
+                  loading="lazy"
+                  decoding="async"
+                  format="webp"
+                  quality="80"
+                  class="rounded-2xl shadow-2xl w-full"
+                />
+              )}
+              {serviceData.authBadgeTitleOne && serviceData.authBadgeTitleTwo && (
+                <div class="absolute -bottom-6 -right-6 bg-primary-gold text-white px-8 py-4 rounded-2xl font-bold shadow-xl">
+                  <div class="text-center">
+                    <div class="text-2xl">{serviceData.authBadgeTitleOne}</div>
+                    <div class="text-sm font-normal">{serviceData.authBadgeTitleTwo}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ -->
+  {
+    serviceData.faqItems && serviceData.faqItems.length > 0 && (
+      <section class="bg-light-bg px-8 lg:px-16 py-8 lg:py-16" id="faq">
+        <div class="shape shape-2" />
+        <div>
+          <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+              <Heading text={serviceData.faqTitle} accent={serviceData.faqTitleAccent} />
+            </div>
+
+            <div class="space-y-4">
+              {serviceData.faqItems.map((faq, index) => (
+                <div class="bg-white rounded-2xl overflow-hidden reveal-effect">
+                  <button
+                    class="w-full text-left p-6 font-bold text-primary-dark hover:bg-light-bg transition-colors duration-300 flex items-center justify-between faq-toggle"
+                    data-target={`faq-${index + 1}`}
+                  >
+                    <span class="flex items-center">
+                      <span class="mr-4 text-2xl text-primary-gold">👉</span>
+                      {faq.question}
+                    </span>
+                    <svg
+                      class="w-5 h-5 transition-transform duration-300 faq-icon text-primary-gold"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  <div
+                    id={`faq-${index + 1}`}
+                    class="hidden p-6 pt-4 text-gray-700 leading-relaxed faq-content"
+                  >
+                    {faq.answer}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- CTA Final -->
+  <section class="contact-cta !px-8 lg:!px-16 !py-8 lg:!py-16" id="cta">
+    <div class="contact-cta-shape contact-cta-shape-1"></div>
+    <div class="contact-cta-shape contact-cta-shape-2"></div>
+
+    <div class="text-center">
+      <Heading text={serviceData.ctaTitle} accent={serviceData.ctaTitleAccent} color="white" />
+      <div class="mt-4">
+        <Paragraph text={serviceData.ctaDescription} />
+      </div>
+
+      <div class="mt-8">
+        <Button title="Quero agendar minha avaliação" href={contactLink} />
+        <Button title="Saber Mais" href="#for-who" variant="outline" />
+      </div>
+    </div>
+  </section>
+  <!-- Contact Form Section - Only shows if YayFormsId exists -->
+  {
+    serviceData.YayFormsId && (
+      <section class="h-[80svh]" id="contact">
+        <div
+          id="yay-container"
+          data-yf-widget={serviceData.YayFormsId}
+          data-form-id={serviceData.YayFormsId}
+          style="width:100%;height:100%;"
+        />
+      </section>
+    )
+  }
+  <!-- Footer -->
+  <section class="bg-primary-dark text-white px-8 lg:px-16 py-8 lg:py-16" id="tecnical">
+    <div>
+      <div class="text-center">
+        <h3 class="font-cormorant text-3xl font-bold mb-6">
+          {mainData?.nome || ''}
+        </h3>
+        <p class="text-sm text-white/60 mb-8">
+          CRO: {mainData?.numero_cro} | Responsável Técnico: {mainData?.responsavel_tecnico}
+        </p>
+
+        <div class="flex flex-wrap justify-center items-center gap-8 text-sm text-white/70">
+          <div class="flex items-center gap-2">
+            <span>📍</span>
+            <span>Atendemos na região de {mainData?.endereco}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span>📞</span>
+            <span>{mainData?.telefone}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span>📧</span>
+            <span>{mainData?.email}</span>
+          </div>
+        </div>
+
+        <div class="mt-12 pt-8 border-t border-white/10">
+          <p class="text-xs text-white/50 max-w-4xl mx-auto italic">
+            *Este site tem caráter exclusivamente informativo e segue as diretrizes do Código de
+            Ética Odontológica. A avaliação presencial é essencial para diagnóstico individualizado.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Coleta os parâmetros da URL
+    const queryParams = new URLSearchParams(window.location.search);
+    const paramString = queryParams.toString();
+
+    // Pega o ID do formulário do atributo
+    const yayContainer = document.getElementById('yay-container');
+    if (!yayContainer) return; // Se não há container, não há formulário
+
+    const formId = yayContainer.getAttribute('data-form-id');
+
+    if (!formId) return; // Proteção extra
+
+    // Cria o iframe
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://yayforms.link/${formId}` + (paramString ? `?${paramString}` : '');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    yayContainer.appendChild(iframe);
+  });
+</script>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', function () {
+    // FAQ toggle
+    document.querySelectorAll('.faq-toggle').forEach((toggle) => {
+      toggle.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const faqContent = document.getElementById(targetId);
+        const icon = this.querySelector('.faq-icon');
+        if (!faqContent || !icon) return;
+
+        document.querySelectorAll('.faq-content').forEach((content) => {
+          if (content.id !== targetId) content.classList.add('hidden');
+        });
+        document.querySelectorAll('.faq-icon').forEach((faqIcon) => {
+          if (faqIcon !== icon) faqIcon.style.transform = 'rotate(0deg)';
+        });
+
+        if (faqContent.classList.contains('hidden')) {
+          faqContent.classList.remove('hidden');
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          faqContent.classList.add('hidden');
+          icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  #tecnical {
+    zoom: 0.9;
+  }
+  #cta {
+    zoom: 0.9;
+  }
+  #faq {
+    zoom: 0.9;
+  }
+  #sobre-nos {
+    zoom: 0.9;
+  }
+  #casos {
+    zoom: 0.9;
+  }
+  #for-who {
+    zoom: 0.9;
+  }
+  #beneficios {
+    zoom: 0.9;
+  }
+</style>
