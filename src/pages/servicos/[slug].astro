@@ -17,7 +17,7 @@ export async function getStaticPaths() {
     return [];
   }
 }
-
+// @ts-ignore
 const { slug } = Astro.params;
 
 let serviceData = null;
@@ -33,21 +33,268 @@ let mainData = null;
 try {
   mainData = await getMainData();
 } catch {
+  // @ts-ignore
+
   throw new Error('Erro ao buscar dados da clínica');
 }
+// @ts-ignore
 
 const serviceName = serviceData.service_name;
 const message = `Olá, tudo bem? Vim do site e queria saber mais sobre ${serviceData.service_name}`;
+// @ts-ignore
+
 const encodedMessage = encodeURIComponent(message);
 
 const whatsappLink = `https://wa.me/${mainData?.whatsapp}?text=${encodedMessage}`;
+// @ts-ignore
+
 const contactLink = serviceData.YayFormsId ? '#contact' : whatsappLink;
+// @ts-ignore
 
 const metaTitle = `${serviceData.heroTitle} | ${mainData?.nome}`;
+// @ts-ignore
+
 const metaDescription = serviceData.heroDescription;
+
+// Construir URL canônica do serviço
+const currentUrl = `${Astro.site || 'https://luminoclinica.com.br'}/servicos/${slug}`;
+
+// Schema Structured Data completo
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    // 1. Service Schema - Serviço principal
+    {
+      "@type": "MedicalProcedure",
+      "@id": `${currentUrl}#service`,
+      "name": serviceData.service_name,
+      "alternateName": serviceData.heroTitle,
+      "description": serviceData.heroDescription,
+      "url": currentUrl,
+      "image": serviceData.heroImage ? {
+        "@type": "ImageObject",
+        "url": serviceData.heroImage,
+        "width": 1920,
+        "height": 1080
+      } : undefined,
+      "provider": {
+        "@id": `${Astro.site || 'https://luminoclinica.com.br'}#organization`
+      },
+      "procedureType": "Dental/Aesthetic Procedure",
+      ...(serviceData.benefits && serviceData.benefits.length > 0 && {
+        "benefits": serviceData.benefits.map(b => b.title).join(', ')
+      }),
+      ...(serviceData.casesBeforeAfter && serviceData.casesBeforeAfter.length > 0 && {
+        "expectedPrognosis": "Resultados visíveis comprovados em casos reais",
+        "associatedAnatomy": {
+          "@type": "AnatomicalStructure",
+          "name": "Estrutura Dental e Facial"
+        }
+      }),
+      "offers": {
+        "@type": "Offer",
+        "availability": "https://schema.org/InStock",
+        "url": currentUrl,
+        "priceCurrency": "BRL",
+        "availableAtOrFrom": {
+          "@id": `${Astro.site || 'https://luminoclinica.com.br'}#organization`
+        }
+      }
+    },
+
+    // 2. Medical Business Schema - Clínica/Dentista
+    {
+      "@type": ["Dentist", "MedicalBusiness", "LocalBusiness"],
+      "@id": `${Astro.site || 'https://luminoclinica.com.br'}#organization`,
+      "name": mainData?.nome || "Lumino Clínica",
+      "description": `Clínica odontológica e estética especializada em ${serviceData.service_name}`,
+      "url": Astro.site || 'https://luminoclinica.com.br',
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${Astro.site || 'https://luminoclinica.com.br'}/logo.png`
+      },
+      "image": serviceData.authFeaturedImage || serviceData.heroImage,
+      "telephone": mainData?.telefone,
+      "email": mainData?.email,
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": mainData?.endereco,
+        "addressCountry": "BR"
+      },
+      "medicalSpecialty": ["Dentistry", "CosmeticDentistry", "AestheticMedicine"],
+      "priceRange": "$$",
+      ...(mainData?.numero_cro && {
+        "identifier": {
+          "@type": "PropertyValue",
+          "propertyID": "CRO",
+          "value": mainData.numero_cro
+        }
+      }),
+      ...(mainData?.responsavel_tecnico && {
+        "employee": {
+          "@type": "Person",
+          "name": mainData.responsavel_tecnico,
+          "jobTitle": "Responsável Técnico"
+        }
+      }),
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Serviços Odontológicos e Estéticos",
+        "itemListElement": [{
+          "@type": "Offer",
+          "itemOffered": {
+            "@id": `${currentUrl}#service`
+          }
+        }]
+      }
+    },
+
+    // 3. BreadcrumbList Schema - Navegação
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${currentUrl}#breadcrumb`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Início",
+          "item": Astro.site || 'https://luminoclinica.com.br'
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Serviços",
+          "item": `${Astro.site || 'https://luminoclinica.com.br'}/servicos`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": serviceData.service_name,
+          "item": currentUrl
+        }
+      ]
+    },
+
+    // 4. FAQPage Schema - Perguntas Frequentes (SEMPRE presente)
+    {
+      "@type": "FAQPage",
+      "@id": `${currentUrl}#faq`,
+      "url": `${currentUrl}#faq`,
+      "name": `Perguntas Frequentes sobre ${serviceData.service_name}`,
+      "mainEntity": serviceData.faqItems && serviceData.faqItems.length > 0
+        ? serviceData.faqItems.map(faq => ({
+            "@type": "Question",
+            "name": faq.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.answer
+            }
+          }))
+        : [{
+            "@type": "Question",
+            "name": `Informações sobre ${serviceData.service_name}`,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": serviceData.heroDescription
+            }
+          }]
+    },
+
+    // 5. ImageGallery Schema - Casos Antes/Depois (SEMPRE presente)
+    {
+      "@type": "ImageGallery",
+      "@id": `${currentUrl}#casos`,
+      "url": `${currentUrl}#casos`,
+      "name": `Casos de ${serviceData.service_name} - Antes e Depois`,
+      "description": serviceData.casesDescription || `Galeria de resultados reais de ${serviceData.service_name}`,
+      ...(serviceData.casesBeforeAfter && serviceData.casesBeforeAfter.length > 0 && {
+        "image": serviceData.casesBeforeAfter.flatMap(c => [
+          {
+            "@type": "ImageObject",
+            "url": c.before,
+            "name": `Antes - ${c.title}`,
+            "description": c.description,
+            "representativeOfPage": false
+          },
+          {
+            "@type": "ImageObject",
+            "url": c.after,
+            "name": `Depois - ${c.title}`,
+            "description": c.description,
+            "representativeOfPage": false
+          }
+        ]).filter(img => img.url)
+      })
+    },
+
+    // 6. WebPage Schema - Página em si
+    {
+      "@type": "WebPage",
+      "@id": currentUrl,
+      "url": currentUrl,
+      "name": metaTitle,
+      "description": metaDescription,
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": `${Astro.site || 'https://luminoclinica.com.br'}#website`,
+        "name": mainData?.nome || "Lumino Clínica",
+        "url": Astro.site || 'https://luminoclinica.com.br'
+      },
+      "about": {
+        "@id": `${currentUrl}#service`
+      },
+      "breadcrumb": {
+        "@id": `${currentUrl}#breadcrumb`
+      },
+      "specialty": "Odontologia e Estética",
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": serviceData.heroImage
+      },
+      "hasPart": [
+        {
+          "@id": `${currentUrl}#faq`
+        },
+        {
+          "@id": `${currentUrl}#casos`
+        },
+        ...(serviceData.benefits && serviceData.benefits.length > 0 ? [{
+          "@id": `${currentUrl}#benefits`
+        }] : [])
+      ]
+    },
+
+    // 7. ItemList Schema - Lista de Benefícios (se existirem)
+    ...(serviceData.benefits && serviceData.benefits.length > 0 ? [{
+      "@type": "ItemList",
+      "@id": `${currentUrl}#benefits`,
+      "name": `Benefícios de ${serviceData.service_name}`,
+      "description": serviceData.benefitsDescription,
+      "numberOfItems": serviceData.benefits.length,
+      "itemListElement": serviceData.benefits.map((benefit, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": benefit.title,
+        "description": benefit.text
+      }))
+    }] : [])
+  ]
+};
+
+// Remover propriedades undefined e converter para string JSON
+const cleanedStructuredData = JSON.parse(JSON.stringify(structuredData));
+const structuredDataString = JSON.stringify(cleanedStructuredData);
 ---
 
-<MainLayout title={metaTitle} description={metaDescription}>
+<MainLayout
+  title={metaTitle}
+  description={metaDescription}
+  structured_data={structuredDataString}
+  canonical={currentUrl}
+  og_title={metaTitle}
+  og_description={metaDescription}
+  og_image={serviceData.heroImage}
+>
   <!-- Hero Section -->
   <section class="h-[100vh] bg-white flex items-center overflow-hidden relative" id="hero-bg">
     <div class="hero-bg">

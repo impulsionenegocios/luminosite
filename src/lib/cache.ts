@@ -7,7 +7,7 @@ export const redis = new Redis(process.env.REDIS_URL, {
 
 export async function getCachedData<T>(key: string, fetchFn: () => Promise<T>): Promise<T> {
   const cached = await redis.get(key);
-  
+
   if (cached) {
     console.log(`[CACHE] Usando cache de Redis para a chave: ${key}`);
     return JSON.parse(cached);
