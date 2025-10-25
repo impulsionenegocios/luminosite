@@ -50,7 +50,7 @@ const { sliceQtd, showButton } = Astro.props as {
             </div>
             <div class="service-content p-4">
               <div class="service-icon mb-2 text-2xl">✨</div>
-              <h3 class="service-title !text-lg font-semibold mb-2">{service.heroTitle}</h3>
+              <h3 class="service-title !text-lg font-semibold mb-2">{service.service_name}</h3>
               <p class="service-description text-gray-500 mb-4 !text-xs">
                 {service.heroDescription.slice(0, 90)}
                 {service.heroDescription.length > 90 ? '...' : ''}

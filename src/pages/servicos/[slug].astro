@@ -169,8 +169,8 @@ const metaDescription = serviceData.heroDescription;
           <div class="gallery-container reveal-effect">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
               {serviceData.casesBeforeAfter.map((caseItem, index) => (
-                <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
-                  <div class="grid grid-cols-2 h-80">
+                <div class="bg-white  rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <div class="grid grid-cols-2 lg:min-h-[300px]">
                     {/* Imagem ANTES */}
                     <div class="relative overflow-hidden">
                       {caseItem.before ? (
