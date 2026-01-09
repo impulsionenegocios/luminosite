@@ -1,0 +1,123 @@
+---
+// ParticlesBackground.astro
+---
+
+<script is:inline>
+  // Este script será executado no cliente após o carregamento do DOM
+  document.addEventListener('DOMContentLoaded', async function () {
+    // Procura por todos os elementos com a classe counter-particles
+    const particlesContainers = document.querySelectorAll('.counter-particles');
+
+    if (particlesContainers.length > 0 && typeof tsParticles !== 'undefined') {
+      // Para cada container, inicializa as partículas
+      particlesContainers.forEach((container, index) => {
+        // Garante que cada container tenha um ID único para o tsParticles
+        const containerId = container.id || `particles-container-${index}`;
+        if (!container.id) {
+          container.id = containerId;
+        }
+
+        // Importante: Limita o contexto da animação apenas ao container atual
+        // Isso impede que as partículas sejam renderizadas fora do elemento
+        container.style.position = container.style.position || 'absolute';
+        container.style.overflow = container.style.overflow || 'hidden';
+
+        try {
+          // Inicializa as partículas para este container específico
+          tsParticles.load(containerId, {
+            particles: {
+              number: {
+                value: 80,
+                density: {
+                  enable: true,
+                  value_area: 800,
+                },
+              },
+              color: {
+                value: '#c9a874',
+              },
+              shape: {
+                type: 'circle',
+              },
+              opacity: {
+                value: 0.1,
+                random: true,
+              },
+              size: {
+                value: 5,
+                random: true,
+              },
+              line_linked: {
+                enable: true,
+                distance: 150,
+                color: '#c9a874',
+                opacity: 0.05,
+                width: 1,
+              },
+              move: {
+                enable: true,
+                speed: 2,
+                direction: 'none',
+                random: true,
+                straight: false,
+                out_mode: 'out',
+                bounce: false,
+              },
+            },
+            interactivity: {
+              detect_on: 'canvas',
+              events: {
+                onhover: {
+                  enable: true,
+                  mode: 'grab',
+                },
+                onclick: {
+                  enable: true,
+                  mode: 'push',
+                },
+                resize: true,
+              },
+            },
+            retina_detect: true,
+            // Importante: Restringir as partículas ao container
+            fullScreen: {
+              enable: false,
+            },
+          });
+          console.log(`tsParticles inicializado com sucesso para ${containerId}`);
+        } catch (error) {
+          console.error(`Erro ao inicializar tsParticles para ${containerId}:`, error);
+          createFallbackParticles(container);
+        }
+      });
+    } else if (particlesContainers.length > 0) {
+      console.warn('tsParticles não está disponível. Criando partículas alternativas.');
+      particlesContainers.forEach((container) => {
+        createFallbackParticles(container);
+      });
+    }
+  });
+
+  // Função para criar partículas simples como fallback
+  function createFallbackParticles(container) {
+    if (container) {
+      // Garante que o container tenha posição relativa para posicionar as partículas
+      container.style.position = container.style.position || 'relative';
+
+      // Adiciona 30 divs de partículas como fallback
+      for (let i = 0; i < 30; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'fallback-particle';
+        particle.style.position = 'absolute';
+        particle.style.width = Math.random() * 5 + 2 + 'px';
+        particle.style.height = Math.random() * 5 + 2 + 'px';
+        particle.style.backgroundColor = '#c9a874';
+        particle.style.opacity = (Math.random() * 0.15).toString();
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.borderRadius = '50%';
+        container.appendChild(particle);
+      }
+    }
+  }
+</script>

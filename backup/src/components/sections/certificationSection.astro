@@ -1,0 +1,154 @@
+---
+// components/CertificationSection.astro
+
+import { Image } from 'astro:assets';
+import Heading from '../typograph/Heading.astro';
+import Paragraph from '../typograph/Paragraph.astro';
+
+interface CertificationItem {
+  image: string;
+  title: string;
+  organization: string;
+  year: string;
+  description: string;
+}
+
+const {
+  headingTitle,
+  headingAccent,
+  description,
+  certifications,
+} = Astro.props as {
+  headingTitle: string;
+  headingAccent: string;
+  description: string;
+  certifications: CertificationItem[];
+};
+---
+
+<section class="section certifications bg-white relative overflow-hidden" id="certifications">
+  <!-- Shapes decorativas -->
+  <div class="absolute z-0 w-[400px] h-[400px] rounded-full bg-primary-gold/3 top-20 -left-48"></div>
+  <div class="absolute z-0 w-[250px] h-[250px] rounded-full bg-primary-dark/5 -bottom-32 -right-32"></div>
+
+  <div class="container relative z-10">
+    <div class="text-center mb-16 reveal-effect">
+      <Heading text={headingTitle} accent={headingAccent} />
+      <div class="mt-4 max-w-2xl mx-auto">
+        <Paragraph fontWeight="300" text={description} />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {certifications.map((cert, index) => (
+        <div class="certification-card bg-white rounded-[20px] overflow-hidden shadow-lg transition-all duration-500 hover:-translate-y-4 hover:shadow-2xl reveal-effect group">
+          <!-- Badge de certificação -->
+          <div class="relative">
+            <div class="certification-badge absolute -top-4 left-6 z-10 bg-primary-gold text-white px-4 py-2 rounded-full text-sm font-medium">
+              {cert.year}
+            </div>
+            
+            <!-- Imagem da certificação -->
+            <div class="h-48 bg-light-bg flex items-center justify-center p-8 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-primary-gold/5 to-primary-dark/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <Image
+                src={cert.image}
+                alt={cert.title}
+                width={200}
+                height={150}
+                class="max-h-32 w-auto object-contain transition-transform duration-500 group-hover:scale-110 relative z-2"
+              />
+            </div>
+          </div>
+
+          <!-- Conteúdo -->
+          <div class="p-6">
+            <!-- Organização -->
+            <div class="flex items-center mb-3">
+              <div class="w-2 h-2 bg-primary-gold rounded-full mr-3"></div>
+              <span class="text-primary-gold font-medium text-sm uppercase tracking-wide">
+                {cert.organization}
+              </span>
+            </div>
+
+            <!-- Título -->
+            <h3 class="font-cormorant text-xl font-semibold text-primary-dark mb-3 leading-tight">
+              {cert.title}
+            </h3>
+
+            <!-- Descrição -->
+            <p class="text-gray-text text-sm leading-relaxed mb-4 font-light">
+              {cert.description}
+            </p>
+
+            <!-- Link de verificação -->
+            <a 
+              href="#" 
+              class="inline-flex items-center text-primary-gold hover:text-primary-dark text-sm font-medium transition-colors duration-300 group/link"
+            >
+              <span class="mr-2">Verificar certificado</span>
+              <svg 
+                class="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Linha decorativa inferior -->
+          <div class="h-1 bg-gradient-to-r from-primary-gold to-primary-dark transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Chamada para ação -->
+    <div class="text-center mt-16 reveal-effect">
+      <div class="inline-block bg-light-bg rounded-2xl p-8">
+        <div class="flex items-center justify-center mb-4">
+          <div class="w-12 h-12 bg-primary-gold rounded-full flex items-center justify-center text-white text-xl">
+            🏆
+          </div>
+        </div>
+        <h3 class="font-cormorant text-2xl font-semibold text-primary-dark mb-2">
+          Excelência Certificada
+        </h3>
+        <p class="text-gray-text text-sm max-w-md mx-auto">
+          Nossas certificações garantem os mais altos padrões de qualidade e segurança em todos os nossos serviços.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .certification-badge {
+    box-shadow: 0 10px 20px rgba(201, 168, 116, 0.3);
+  }
+  
+  .certification-card {
+    position: relative;
+  }
+  
+  .certification-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(145deg, transparent 0%, rgba(201, 168, 116, 0.02) 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  
+  .certification-card:hover::before {
+    opacity: 1;
+  }
+  #certifications {
+    zoom: 0.9
+  }
+</style>

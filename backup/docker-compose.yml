@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.astro
+      - /app/dist
+    environment:
+      NODE_ENV: development
+    stdin_open: true
+    tty: true
+    env_file:
+      - .env
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:

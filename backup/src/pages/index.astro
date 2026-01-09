@@ -1,0 +1,45 @@
+---
+import ParticlesBackground from '../components/animations/ParticlesBackground.astro';
+import MainLayout from '../layouts/mainLayout.astro';
+import HeroSection from '../components/sections/heroSection.astro';
+import CounterSection from '../components/sections/counterSection.astro';
+import ServicesSection from '../components/sections/servicesSection.astro';
+import GallerySection from '../components/sections/gallerySection.astro';
+import LocationSection from '../components/sections/locationSection.astro';
+import TestimonialSection from '../components/sections/testimonialSection.astro';
+import BlogSection from '../components/sections/blogSection.astro';
+import CtaSection from '../components/sections/ctaSection.astro';
+import AboutUs from '../components/sections/aboutUs.astro';
+import type { HomePageData } from '../data/sections/getHomePageData';
+
+// Importando apenas a função centralizada
+import { getHomePageData } from '../data/sections/getHomePageData';
+
+import { getSeoPagesData } from '../data/seoPagesData';
+const allData = await getSeoPagesData('/');
+
+// Buscando todos os dados de uma vez
+const {
+  heroData,
+  aboutUsData,
+  counterSection,
+  galleryData,
+  locationData,
+  testimonialsData,
+  contactCTAData,
+  blogPosts,
+}: HomePageData = await getHomePageData();
+---
+
+<MainLayout {...allData}>
+  <HeroSection {...heroData} />
+  <AboutUs {...aboutUsData} />
+  <CounterSection stats={counterSection} />
+  <ServicesSection sliceQtd="3" showButton="true" />
+  <GallerySection {...galleryData} />
+  <LocationSection {...locationData} />
+  <TestimonialSection {...testimonialsData} />
+  <CtaSection {...contactCTAData} />
+  <BlogSection posts={blogPosts} sliceQtd={3} showButton={true} enablePagination={false} />
+  <ParticlesBackground />
+</MainLayout>

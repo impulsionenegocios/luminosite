@@ -1,0 +1,129 @@
+---
+// Animations.astro - Usando tsParticles em vez de particles.js
+---
+
+<script>
+  // Importações necessárias
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  // Não importamos mais o particles.js
+
+  // Registrar o plugin ScrollTrigger
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Função para inicializar as animações GSAP
+  function initGSAP() {
+    // Animação de header quando scroll
+    gsap.to('header', {
+      scrollTrigger: {
+        trigger: 'body',
+        start: 'top -50',
+        toggleClass: { className: 'scrolled', targets: 'header' },
+      },
+    });
+
+    // Animação dos elementos com a classe reveal-effect
+    const revealElements = document.querySelectorAll('.reveal-effect');
+    revealElements.forEach((element) => {
+      gsap.fromTo(
+        element,
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: element,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+          },
+        },
+      );
+    });
+
+    // Animação para hero section
+    const heroElements = {
+      subtitle: '.animate-subtitle',
+      title: '.animate-title',
+      description: '.animate-description',
+      buttons: '.animate-buttons',
+    };
+
+    gsap.from(heroElements.subtitle, { opacity: 0, y: 20, duration: 0.8, delay: 0.2 });
+    gsap.from(heroElements.title, { opacity: 0, y: 30, duration: 0.8, delay: 0.4 });
+    gsap.from(heroElements.description, { opacity: 0, y: 30, duration: 0.8, delay: 0.6 });
+    gsap.from(heroElements.buttons, { opacity: 0, y: 30, duration: 0.8, delay: 0.8 });
+
+    // Animação para dots na hero
+    gsap.from('.animate-dots', {
+      opacity: 0,
+      scale: 0,
+      duration: 0.5,
+      stagger: 0.05,
+      delay: 1,
+    });
+
+    // Animação do scroll-down
+    gsap.to('.scroll-down', {
+      y: 10,
+      duration: 1.5,
+      repeat: -1,
+      yoyo: true,
+      ease: 'power1.inOut',
+    });
+
+    // Animação para o contador
+    const counters = document.querySelectorAll('.counter-value');
+    counters.forEach((counter) => {
+      //@ts-ignore
+      const target = parseInt(counter.textContent);
+      gsap.to(counter, {
+        innerHTML: target,
+        duration: 2,
+        snap: { innerHTML: 1 },
+        scrollTrigger: {
+          trigger: '.counter-section',
+          start: 'top 80%',
+        },
+        onUpdate: function () {
+          //@ts-ignore
+          counter.textContent = Math.round(this.targets()[0].innerHTML);
+        },
+      });
+    });
+  }
+
+  // Smooth scroll para links internos
+  function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        //@ts-ignore
+        const targetId = this.getAttribute('href');
+        if (targetId === '#') return;
+
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: 'smooth',
+          });
+        }
+      });
+    });
+  }
+
+  // Inicializar tudo quando o DOM estiver pronto
+  function initAll() {
+    initGSAP();
+    initSmoothScroll();
+  }
+
+  // Garantir inicialização correta no Astro
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(initAll, 100);
+  } else {
+    document.addEventListener('DOMContentLoaded', initAll);
+  }
+</script>

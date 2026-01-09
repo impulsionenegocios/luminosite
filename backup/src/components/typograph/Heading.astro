@@ -1,0 +1,31 @@
+---
+const {
+  type = 'title',
+  text,
+  accent = '',
+  color = 'dark',
+  fontWeight = 'bold', // pode ser 'bold' ou 'light'
+} = Astro.props;
+
+const isTitle = type === 'title';
+const headingTag = isTitle ? 'h1' : 'h2';
+
+const fontSize = isTitle
+  ? 'text-5xl lg:text-6xl 2xl:text-7xl font-serif animate-title'
+  : 'text-[18px] font-sans animate-subtitle';
+
+const weightClass = fontWeight === 'bold' ? 'font-bold' : 'font-regular';
+
+let textColor = 'text-primary-dark';
+if (color === 'gold') textColor = 'text-primary-gold';
+else if (color === 'gray') textColor = 'text-gray-400';
+else if (color === 'white') textColor = 'text-white';
+---
+
+<component
+  this={headingTag}
+  class={`relative leading-none ${fontSize} ${textColor} ${weightClass}`}
+>
+  {text}
+  {accent && <span class="text-primary-gold"> {accent}</span>}
+</component>

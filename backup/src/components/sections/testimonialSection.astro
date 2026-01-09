@@ -1,0 +1,72 @@
+---
+interface TestimonialItem {
+  id: number;
+  name: string;
+  text: string;
+  title?: string;
+  image?: string;
+}
+
+interface TestimonialSectionData {
+  title: string;
+  description: string;
+  items: TestimonialItem[];
+}
+
+const { title, description, items } = Astro.props as TestimonialSectionData;
+
+// Função para gerar rating aleatório (já que não vem do Directus)
+const generateRating = () => Math.floor(Math.random() * 2) + 4; // Rating entre 4 e 5
+---
+
+<section class="section testimonials" id="testimonials">
+  <div class="shape shape-1"></div>
+  <div class="shape shape-2"></div>
+  <div class="container">
+    <div class="testimonials-header">
+      <h2 class="section-title section-title-center">
+        {title}
+      </h2>
+      <p class="section-subtitle section-subtitle-center">
+        {description}
+      </p>
+    </div>
+    <div class="testimonials-wrapper">
+      <div class="testimonials-container">
+        <div class="testimonials-grid">
+          {
+            items.map((testimonial) => (
+              <div class="testimonial-card reveal-effect">
+                <div class="testimonial-quote">"</div>
+                <p class="testimonial-text">{testimonial.text}</p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">
+                    <img
+                      src={testimonial.image || '/images/placeholder-avatar.jpg'}
+                      alt={`Avatar de ${testimonial.name}`}
+                    />
+                  </div>
+                  <div class="testimonial-info">
+                    <h4>{testimonial.name}</h4>
+                    <p>{testimonial.title || 'Cliente'}</p>
+                    <div class="testimonial-rating">
+                      {Array.from({ length: generateRating() }).map(() => (
+                        <span class="testimonial-star">★</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #testimonials {
+    zoom: 0.9;
+  }
+</style>

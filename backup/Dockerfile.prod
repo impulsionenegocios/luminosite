@@ -1,0 +1,33 @@
+# Stage 1: Build the application
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Stage 2: Production environment
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Copy package files first
+COPY package*.json ./
+
+# Install production dependencies at the app root
+RUN npm install --omit=dev
+
+# Copy the built application from the build stage
+COPY --from=build /app/dist ./dist
+
+EXPOSE 4321
+
+# Start the server
+CMD ["node", "dist/server/entry.mjs"]

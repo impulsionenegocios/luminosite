@@ -1,0 +1,118 @@
+---
+// components/LocationSection.astro
+import { getMainData } from '@/data/mainData';
+
+const mainData = await getMainData();
+
+interface LocationItem {
+  icon: string;
+  title: string;
+  info: string;
+}
+
+interface HoursItem {
+  day: string;
+  time: string;
+}
+
+// Props vindos do Directus (apenas title e description por enquanto)
+const { title, description } = Astro.props as {
+  title: string;
+  description: string;
+};
+
+// Dados estáticos mantidos por enquanto
+const locationItems: LocationItem[] = [
+  {
+    icon: '📍',
+    title: 'Endereço',
+    info: mainData?.endereco ?? 'Endereço não disponível',
+  },
+  {
+    icon: '📞',
+    title: 'Telefone',
+    info: `${mainData?.telefone ?? ''}<br>${mainData?.whatsapp ?? ''}`,
+  },
+  {
+    icon: '✉️',
+    title: 'E-mail',
+    info: mainData?.email ?? 'E-mail não disponível',
+  },
+];
+
+const hours: HoursItem[] = [
+  { day: 'Segunda-feira', time: '08:00 - 18:00' },
+  { day: 'Terça-feira', time: '08:00 - 18:00' },
+  { day: 'Quarta-feira', time: '08:00 - 18:00' },
+  { day: 'Quinta-feira', time: '08:00 - 18:00' },
+  { day: 'Sexta-feira', time: '08:00 - 18:00' },
+  { day: 'Sábado', time: '08:00 - 12:00' },
+  { day: 'Domingo', time: 'Fechado' },
+];
+
+const mapAlt = 'Localização da empresa no mapa';
+---
+
+<section class="lg:px-16 px-8 lg:py-16 py-8 max-w-full" id="location">
+  <div class="location-container">
+    <div class="location-content reveal-effect">
+      <h2 class="section-title">
+        {title}
+      </h2>
+      <p class="section-subtitle">
+        {description}
+      </p>
+
+      <div class="location-details">
+        {
+          locationItems.map((item) => (
+            <div class="location-item">
+              <div class="location-icon">{item.icon}</div>
+              <div class="location-info">
+                <h3>{item.title}</h3>
+                <p set:html={item.info} />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="location-hours">
+        <h3>Horário de Funcionamento</h3>
+        <div class="hours-grid">
+          {
+            hours.map((h) => (
+              <>
+                <div class="hours-day">{h.day}:</div>
+                <div class="hours-time">{h.time}</div>
+              </>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="location-map reveal-effect h-[500px] shadow-xl">
+      {mainData?.google_maps_link ? (
+  <div class="h-full" set:html={mainData.google_maps_link} />
+) : (
+  <img src="/images/map-placeholder.jpg" alt={mapAlt} width="600" height="500" />
+)}
+
+    </div>
+  </div>
+</section>
+
+<style>
+  #location {
+    zoom: 0.9;
+  }
+    iframe {
+    filter: grayscale(20%);
+    transition: filter 0.3s ease;
+  }
+
+  iframe:hover {
+    filter: grayscale(0%);
+  }
+</style>

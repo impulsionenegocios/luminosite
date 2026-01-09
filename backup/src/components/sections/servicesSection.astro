@@ -1,0 +1,77 @@
+---
+// components/ServicesSection.astro
+
+import { Image } from 'astro:assets';
+import Heading from '../typograph/Heading.astro';
+import Paragraph from '../typograph/Paragraph.astro';
+import { getAllServices, type ServiceData } from '../../data/servicesData';
+import Button from '../buttons/mainButton.astro';
+const services = await getAllServices();
+const { sliceQtd, showButton } = Astro.props as {
+  sliceQtd: number;
+  showButton: boolean;
+};
+---
+
+<section class="section services" id="servicos">
+  <div class="absolute z-0 w-[300px] h-[300px] rounded-full bg-primary-gold/5 -top-36 -right-36">
+  </div>
+  <div class="absolute z-0 w-[200px] h-[200px] rounded-full bg-primary-dark/5 -bottom-28 -left-28">
+  </div>
+  <div class="text-center mb-12">
+    <Heading text="Conheça nossos" accent="serviços" />
+    <div class="mt-4">
+      <Paragraph
+        fontWeight="300"
+        text="Todos os serviços são executados por profissionais qualificados e com tecnologia de ponta."
+      />
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:px-20 px-8 mx-auto">
+    {
+      services.slice(0, sliceQtd).map((service) => (
+        <a
+          href={`/servicos/${service.slug}`}
+          class="service-link text-primary-gold hover:underline"
+        >
+          <div class="service-card cursor-pointer reveal-effect">
+            <div class="service-image !h-[200px]">
+              <Image
+                src={service.heroImage}
+                alt={service.heroTitle}
+                width={600}
+                layout="constrained"
+                loading="lazy"
+                decoding="async"
+                height={400}
+                class="w-full h-auto rounded"
+              />
+            </div>
+            <div class="service-content p-4">
+              <div class="service-icon mb-2 text-2xl">✨</div>
+              <h3 class="service-title !text-lg font-semibold mb-2">{service.heroTitle}</h3>
+              <p class="service-description text-gray-500 mb-4 !text-xs">
+                {service.heroDescription.slice(0, 90)}
+                {service.heroDescription.length > 90 ? '...' : ''}
+              </p>
+              Saiba mais
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+  {
+    showButton && (
+      <div class="text-center mt-12 reveal-effect">
+        <Button title="Ver todos os serviços" href="/servicos" />
+      </div>
+    )
+  }
+</section>
+<style>
+  #services {
+    zoom: 0.9;
+  }
+</style>

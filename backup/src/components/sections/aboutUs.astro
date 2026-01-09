@@ -1,0 +1,114 @@
+---
+import { Image } from 'astro:assets';
+import Heading from '../typograph/Heading.astro';
+import Paragraph from '../typograph/Paragraph.astro';
+
+interface AboutUsItem {
+  id: number;
+  title: string;
+  description: string;
+  sort?: number;
+}
+
+interface AboutUsData {
+  title?: string;
+  title_accent?: string;
+  subtitle?: string;
+  description?: string;
+  imagem?: string;
+  items: AboutUsItem[];
+}
+
+const { title, title_accent, subtitle, description, imagem, items } = Astro.props as AboutUsData;
+
+// URL base para assets do Directus
+const assetsUrl = import.meta.env.PUBLIC_DIRECTUS_EXTERNAL_URL;
+
+// Ordenar items por sort se existir, senão por id
+const sortedItems = items.sort((a, b) => {
+  const aSort = a.sort ?? Infinity;
+  const bSort = b.sort ?? Infinity;
+
+  if (aSort !== bSort) {
+    return aSort - bSort;
+  }
+  return a.id - b.id;
+});
+
+// Converter items do Directus para o formato esperado pelos features
+const features = sortedItems.map((item) => ({
+  icon: '✨', // Ícone padrão, pode ser customizado depois
+  title: item.title,
+  description: item.description,
+}));
+
+// URL da imagem do Directus
+const shapeImage = imagem
+  ? `${assetsUrl}/assets/${imagem}?width=700&height=800&format=webp&quality=80`
+  : '/images/about-us-placeholder.jpg';
+---
+
+<section class="bg-white relative py-18 overflow-hidden pb-4" id="about">
+  <!-- TOP - shape 1 -->
+  <div class="absolute z-0 w-[300px] h-[300px] rounded-full bg-primary-gold/5 -top-36 -right-36">
+  </div>
+  <!-- BOTTOM - shape 2 -->
+  <div class="absolute z-0 w-[200px] h-[200px] rounded-full bg-primary-dark/5 -bottom-28 -left-28">
+  </div>
+  <!-- LINHA IMAGEM -->
+  <div
+    class="absolute top-0 left-[25%] lg:left-[15%] w-[1px] h-[40%] lg:h-full bg-gradient-to-b from-transparent via-primary-gold to-transparent"
+  >
+  </div>
+
+  <div class="grid lg:grid-cols-9 gap-8 items-center mx-auto lg:px-20 w-full relative z-10">
+    <div class="h-[400px] lg:h-[500px] 2xl:h-[800px] lg:col-span-4 px-8 relative reveal-effect">
+      <Image
+        src={shapeImage}
+        alt={`${title} ${title_accent} || `}
+        layout="constrained"
+        loading="lazy"
+        decoding="async"
+        width={700}
+        height={800}
+        class="absolute w-[55%] h-[80%] lg:h-[70%] 2xl:w-[60%] 2xl:h-[85%] top-0 lg:left-0 2xl:left-20 object-cover rounded-tr-[250px] rounded-bl-[250px] shadow-xl shadow-primary-gold/5 z-2"
+      />
+      <div
+        class="absolute w-[65%] 2xl:w-[55%] h-[80%] lg:h-[70%] bottom-0 right-[25px] 2xl:right-20 bg-primary-gold/12 rounded-tl-[250px] rounded-br-[250px] shadow-xl shadow-primary-gold/5 z-1"
+      >
+      </div>
+    </div>
+
+    <div class="reveal-effect lg:col-span-5 relative px-8 flex flex-col gap-y-4 mt-4 lg:mt-0">
+      <Heading text={title || ''} accent={title_accent || ''} />
+      <Heading text={subtitle || ''} type="subtitle" color="gray" fontWeight="regular" />
+      <div class="mb-4">
+        <Paragraph fontWeight="300" text={description || ''} />
+      </div>
+      <div class="grid lg:grid-cols-2 gap-4">
+        {
+          features.map((item: { icon: string; title: string; description: string }) => (
+            <div class="flex items-start group reveal-effect">
+              <div
+                class="mr-[15px] w-[40px] h-[40px] bg-light-bg rounded-full flex items-center justify-center text-primary-gold shrink-0 text-xl transition-all duration-300 
+                group-hover:bg-primary-gold group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-gold/15 group-hover:-translate-y-[3px]"
+              >
+                {item.icon}
+              </div>
+              <div>
+                <h3 class="text-[18px] font-semibold mb-[10px] text-primary-dark">{item.title}</h3>
+                <p class="text-[15px] text-gray-500">{item.description}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  #about {
+    zoom: 0.8;
+  }
+</style>

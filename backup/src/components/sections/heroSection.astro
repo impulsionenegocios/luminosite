@@ -1,0 +1,49 @@
+---
+import { Image } from 'astro:assets';
+import Button from '../../components/buttons/mainButton.astro';
+import DotsShape from '../shapes/dotsShape.astro';
+const { title, subtitle, description, bg_image, buttons } = Astro.props;
+---
+
+<!-- Hero Section -->
+<section class="h-[100vh] bg-white flex items-center overflow-hidden relative" id="home">
+  <div class="hero-bg">
+    <Image
+      src={bg_image}
+      alt="Lumino Clínica"
+      class="hero-bg-image"
+      layout="full-width"
+      loading="lazy"
+      decoding="async"
+      width="1920"
+      height="1080"
+    />
+  </div>
+  <div class="counter-particles"></div>
+  <div class="mx-auto max-w-[1600px] lg:pl-40 w-full z-10">
+    <div class="lg:w-[50%] px-8 lg:px-0 z-3">
+      <span class="text-primary-gold font-bold animate-subtitle font-serif">{subtitle}</span>
+      <h1 class="text-6xl 2xl:text-7xl font-bold font-serif animate-title">
+        {title}<h1>
+          <p class="text-md text-gray-500 animate-description mt-4">{description}</p>
+          {
+            buttons?.length > 0 && (
+              <div class="flex flex-col lg:flex-row gap-4 animate-buttons mt-8">
+                {buttons.map(
+                  (btn: { label: string; href: string; variant?: 'solid' | 'outline' }) => (
+                    <Button title={btn.label} href={btn.href} variant={btn.variant || 'solid'} />
+                  ),
+                )}
+              </div>
+            )
+          }
+        </h1>
+      </h1>
+      <DotsShape />
+      <div class="scroll-down">
+        <span>&nbsp;</span>
+        <p>Deslize para baixo</p>
+      </div>
+    </div>
+  </div>
+</section>

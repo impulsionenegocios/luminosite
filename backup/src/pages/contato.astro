@@ -1,0 +1,367 @@
+---
+// pages/contato.astro - Página de Contato Institucional
+import { getMainData } from '../data/mainData';
+import { getHeroData } from '../data/sections/hero_section';
+import { Image } from 'astro:assets';
+import MainLayout from '../layouts/mainLayout.astro';
+import DotsShape from '../components/shapes/dotsShape.astro';
+import MdiIcon from '../components/utils/MdiIcon.astro';
+import { getContactPageData } from '../data/contactPageData';
+import type { Horarios } from '../data/contactPageData';
+import { getSeoPagesData } from '../data/seoPagesData';
+
+const contactPageData = await getContactPageData();
+const seoData = await getSeoPagesData('/contato');
+
+const mainData = await getMainData();
+const heroData = await getHeroData();
+
+
+const heroImage = heroData?.bg_image ?? '/images/contato-hero.jpg';
+
+const whatsappLink = mainData?.link_whatsapp ?? '#';
+---
+
+{contactPageData && (
+<MainLayout
+  title={seoData?.title}
+  description={seoData?.description}
+  noindex={seoData?.noindex}
+  nofollow={seoData?.nofollow}
+  og_title={seoData?.og_title}
+  og_description={seoData?.og_description}
+  og_image={seoData?.og_image}
+  twitter_card={seoData?.twitter_card}
+  structured_data={seoData?.structured_data}
+>
+  <!-- Hero Section -->
+  <section class="h-[70vh] bg-white flex items-center overflow-hidden relative mt-28">
+    <div class="hero-bg">
+      <Image
+        src={heroImage}
+        alt="Contato Lúmino Clínica"
+        class="hero-bg-image"
+        layout="full-width"
+        loading="eager"
+        width={1920}
+        height={1080}
+      />
+    </div>
+    <div class="counter-particles"></div>
+
+    <div class="mx-auto max-w-[1600px] lg:pl-40 w-full z-10">
+      <div class="lg:w-[50%] px-8 lg:px-0 z-3">
+        <span
+          class="text-primary-gold font-bold animate-subtitle font-serif text-sm tracking-wider"
+        >
+          {contactPageData.subtitle}
+        </span>
+        <h1
+          class="text-5xl md:text-6xl 2xl:text-7xl font-bold font-cormorant animate-title mt-4 leading-tight"
+        >
+          {contactPageData.title}
+          <span class="text-primary-gold">conosco</span>
+        </h1>
+        <p class="text-lg text-gray-600 animate-description mt-6 leading-relaxed">
+          {contactPageData.description}
+        </p>
+      </div>
+      <DotsShape />
+    </div>
+  </section>
+
+  <!-- Seção de Contatos Rápidos -->
+  <section class="section bg-primary-dark text-white" id="fast-contact">
+    <div class="shape shape-3"></div>
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <a href={whatsappLink} target="_blank" class="group cursor-pointer">
+          <div
+            class="text-center reveal-effect transform transition-all duration-500 group-hover:-translate-y-3"
+          >
+            <div
+              class="w-24 h-24 mx-auto mb-6 bg-white/10 rounded-full flex items-center justify-center text-4xl group-hover:bg-primary-gold transition-all duration-500"
+            >
+              <MdiIcon name="whatsapp" size={32} className="mx-auto" />
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-primary-gold">WhatsApp</h3>
+            <p class="text-xl text-white/90">{mainData?.whatsapp}</p>
+            <p class="text-sm text-white/70 mt-2">Resposta rápida</p>
+          </div>
+        </a>
+
+        <a
+          href={`tel:${mainData?.telefone?.replace(/\s/g, '')}`}
+          class="group cursor-pointer"
+        >
+          <div
+            class="text-center reveal-effect transform transition-all duration-500 group-hover:-translate-y-3"
+          >
+            <div
+              class="w-24 h-24 mx-auto mb-6 bg-white/10 rounded-full flex items-center justify-center text-4xl group-hover:bg-primary-gold transition-all duration-500"
+            >
+              <MdiIcon name="phone-outline" size={32} className="mx-auto" />
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-primary-gold">Telefone</h3>
+            <p class="text-xl text-white/90">{mainData?.telefone}</p>
+            <p class="text-sm text-white/70 mt-2">Atendimento comercial</p>
+          </div>
+        </a>
+
+        <a href={`mailto:${mainData?.email}`} class="group cursor-pointer">
+          <div
+            class="text-center reveal-effect transform transition-all duration-500 group-hover:-translate-y-3"
+          >
+            <div
+              class="w-24 h-24 mx-auto mb-6 bg-white/10 rounded-full flex items-center justify-center text-4xl group-hover:bg-primary-gold transition-all duration-500"
+            >
+              <MdiIcon name="email-outline" size={32} className="mx-auto" />
+            </div>
+            <h3 class="text-2xl font-bold mb-2 text-primary-gold">E-mail</h3>
+            <p class="text-lg text-white/90">{mainData?.email}</p>
+            <p class="text-sm text-white/70 mt-2">Para documentos e orçamentos</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formulário e Informações -->
+  <section class="section bg-white">
+    <div class="shape shape-1"></div>
+    <div class="container">
+      <div>
+        <!-- Informações -->
+        <div class="reveal-effect">
+          <h2 class="section-title mb-8 text-center">
+            Informações de <span class="accent">atendimento</span>
+          </h2>
+          <div class="grid lg:grid-cols-3 gap-4 lg:gap-16">
+            <!-- Endereço -->
+            <div class="mb-8">
+              <div class="flex items-start gap-4 mb-6">
+                <div
+                  class="w-14 h-14 bg-light-bg rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                >
+                  <MdiIcon name="map-marker" size={32} className="mx-auto" />
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-primary-dark mb-2">Endereço</h3>
+                  <p class="text-gray-600" set:html={mainData?.endereco}></p>
+                  <a
+                    href={mainData?.link_google}
+                    target="_blank"
+                    class="text-primary-gold hover:text-gold-dark transition-colors mt-2 inline-block"
+                  >
+                    Ver no Google Maps →
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Horários -->
+            <div class="mb-8">
+              <div class="flex items-start gap-4 mb-6">
+                <div
+                  class="w-14 h-14 bg-light-bg rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                >
+                  <MdiIcon name="clock-time-four" size={32} className="mx-auto" />
+                </div>
+                <div class="w-full">
+                  <h3 class="text-xl font-bold text-primary-dark mb-4">Horário de Atendimento</h3>
+                  <div class="space-y-3">
+                    {
+                      contactPageData?.horarios?.map((item: Horarios) => (
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                          <span class="font-medium text-gray-700">{item.dia}</span>
+                          <span class="text-primary-gold font-medium">{item.horario}</span>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Redes Sociais -->
+            <div>
+              <div class="flex items-start gap-4">
+                <div
+                  class="w-14 h-14 bg-light-bg rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                >
+                  <MdiIcon name="web-box" size={32} className="mx-auto" />
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-primary-dark mb-4">Redes Sociais</h3>
+                  <div class="flex gap-4">
+                    <a
+                      href={mainData?.link_instagram}
+                      target="_blank"
+                      class="w-12 h-12 bg-primary-dark text-white rounded-xl flex items-center justify-center hover:bg-primary-gold transition-all duration-300 transform hover:scale-110"
+                    >
+                      <MdiIcon name="instagram" size={32} className="mx-auto" />
+                    </a>
+                    <a
+                      href={mainData?.link_facebook}
+                      target="_blank"
+                      class="w-12 h-12 bg-primary-dark text-white rounded-xl flex items-center justify-center hover:bg-primary-gold transition-all duration-300 transform hover:scale-110"
+                    >
+                      <MdiIcon name="facebook" size={32} className="mx-auto" />
+                    </a>
+                    <a
+                      href={whatsappLink}
+                      target="_blank"
+                      class="w-12 h-12 bg-green-500 text-white rounded-xl flex items-center justify-center hover:bg-green-600 transition-all duration-300 transform hover:scale-110"
+                    >
+                      <MdiIcon name="whatsapp" size={32} className="mx-auto" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mapa -->
+  <section class="h-[500px] relative">
+   {mainData?.google_maps_link ? (
+  <div class="h-full" set:html={mainData.google_maps_link} />
+) : (
+  <img src="/images/map-placeholder.jpg" alt='localizacao mapa' width="600" height="500" />)}
+  </section>
+
+  <!-- FAQ -->
+  <section class="section bg-light-bg">
+    <div class="shape shape-2"></div>
+    <div class="container">
+      <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="section-title section-title-center">
+            Perguntas <span class="accent">frequentes</span>
+          </h2>
+          <p class="section-subtitle section-subtitle-center">
+            Tire suas dúvidas sobre nosso atendimento
+          </p>
+        </div>
+
+        <div class="space-y-4">
+          {
+            mainData?.faq?.map((item, index) => (
+              <div class="bg-white rounded-2xl overflow-hidden reveal-effect shadow-sm hover:shadow-lg transition-shadow duration-300">
+                <button
+                  class="w-full text-left p-6 font-bold text-primary-dark hover:bg-light-bg transition-colors duration-300 flex items-center justify-between faq-toggle"
+                  data-target={`faq-${index}`}
+                >
+                  <span class="flex items-center">
+                    <span class="mr-4 text-2xl text-primary-gold">❓</span>
+                    {item.question}
+                  </span>
+                  <svg
+                    class="w-5 h-5 transition-transform duration-300 faq-icon text-primary-gold"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                <div
+                  id={`faq-${index}`}
+                  class="hidden p-6 pt-0 text-gray-700 leading-relaxed faq-content"
+                  set:html={item.answer}
+                >
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Final -->
+</MainLayout>
+)}
+
+<script is:inline>
+  // Inicialização
+  document.addEventListener('DOMContentLoaded', function () {
+    // FAQ Toggle
+    const faqToggles = document.querySelectorAll('.faq-toggle');
+    faqToggles.forEach((toggle) => {
+      toggle.addEventListener('click', function () {
+        const targetId = this.getAttribute('data-target');
+        const faqContent = document.getElementById(targetId);
+        const icon = this.querySelector('.faq-icon');
+
+        if (faqContent.classList.contains('hidden')) {
+          // Fecha todos os outros
+          document.querySelectorAll('.faq-content').forEach((content) => {
+            content.classList.add('hidden');
+          });
+          document.querySelectorAll('.faq-icon').forEach((faqIcon) => {
+            faqIcon.style.transform = 'rotate(0deg)';
+          });
+
+          // Abre o atual
+          faqContent.classList.remove('hidden');
+          icon.style.transform = 'rotate(180deg)';
+        } else {
+          faqContent.classList.add('hidden');
+          icon.style.transform = 'rotate(0deg)';
+        }
+      });
+    });
+  });
+</script>
+
+<style>
+  /* Estilos específicos para a página de contato */
+  .contact-info-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .contact-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Animação para o botão de envio */
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(201, 168, 116, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(201, 168, 116, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(201, 168, 116, 0);
+    }
+  }
+
+  button[type='submit']:not(:disabled):hover {
+    animation: pulse 2s infinite;
+  }
+
+  /* Estilo para o mapa */
+  iframe {
+    filter: grayscale(20%);
+    transition: filter 0.3s ease;
+  }
+
+  iframe:hover {
+    filter: grayscale(0%);
+  }
+</style>

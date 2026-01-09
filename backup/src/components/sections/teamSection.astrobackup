@@ -1,0 +1,193 @@
+---
+// components/TeamSection.astro
+
+import { Image } from 'astro:assets';
+import Heading from '../typograph/Heading.astro';
+import Paragraph from '../typograph/Paragraph.astro';
+
+interface SocialLink {
+  platform: string;
+  url: string;
+  icon: string;
+}
+
+interface TeamMember {
+  image: string;
+  name: string;
+  role: string;
+  specialties: string[];
+  bio: string;
+  socialLinks: SocialLink[];
+  experience: string;
+}
+
+const {
+  headingTitle,
+  headingAccent,
+  description,
+  teamMembers,
+} = Astro.props as {
+  headingTitle: string;
+  headingAccent: string;
+  description: string;
+  teamMembers: TeamMember[];
+};
+---
+
+<section class="team bg-light-bg relative overflow-hidden mt-16 px-8 py-16" id="team">
+  <!-- Shapes decorativas -->
+  <div class="absolute z-0 w-[350px] h-[350px] rounded-full bg-primary-dark/5 -top-44 -right-44"></div>
+  <div class="absolute z-0 w-[200px] h-[200px] rounded-full bg-primary-gold/8 -bottom-24 -left-24"></div>
+  
+  <!-- Linha decorativa -->
+  <div class="absolute top-1/2 right-[10%] w-[1px] h-[30%] bg-gradient-to-b from-transparent via-primary-gold to-transparent"></div>
+
+  <div class="container relative z-10">
+    <div class="text-center mb-16 reveal-effect">
+      <Heading text={headingTitle} accent={headingAccent} />
+      <div class="mt-4 max-w-2xl mx-auto">
+        <Paragraph fontWeight="300" text={description} />
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {teamMembers.map((member, index) => (
+        <div class="team-card bg-white rounded-[25px] overflow-hidden shadow-lg transition-all duration-700 hover:-translate-y-6 hover:shadow-2xl reveal-effect group">
+          <!-- Imagem do membro -->
+          <div class="relative overflow-hidden">
+            <div class="h-80 relative">
+              <Image
+                src={member.image}
+                alt={member.name}
+                width={400}
+                height={500}
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              
+              <!-- Overlay com gradiente -->
+              <div class="absolute inset-0 bg-gradient-to-t from-primary-dark/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <!-- Badge de experiência -->
+              <div class="absolute top-4 right-4 bg-primary-gold text-white px-3 py-1 rounded-full text-sm font-medium transform translate-x-full group-hover:translate-x-0 transition-transform duration-500">
+                {member.experience}
+              </div>
+              
+              <!-- Redes sociais -->
+              <div class="absolute bottom-4 left-4 right-4 flex justify-center gap-3 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                {member.socialLinks.map((social) => (
+                  <a
+                    href={social.url}
+                    class="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-primary-dark hover:bg-primary-gold hover:text-white transition-all duration-300 hover:scale-110"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span class="text-sm">{social.icon}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <!-- Conteúdo -->
+          <div class="p-6">
+            <!-- Nome e cargo -->
+            <div class="text-center mb-4">
+              <h3 class="font-cormorant text-2xl font-semibold text-primary-dark mb-1">
+                {member.name}
+              </h3>
+              <p class="text-primary-gold font-medium text-sm uppercase tracking-wide">
+                {member.role}
+              </p>
+            </div>
+
+            <!-- Especialidades -->
+            <div class="flex flex-wrap justify-center gap-2 mb-4">
+              {member.specialties.map((specialty) => (
+                <span class="bg-light-bg text-primary-dark px-3 py-1 rounded-full text-xs font-medium hover:bg-primary-gold hover:text-white transition-colors duration-300">
+                  {specialty}
+                </span>
+              ))}
+            </div>
+
+            <!-- Bio -->
+            <p class="text-gray-text text-sm leading-relaxed text-center font-light">
+              {member.bio}
+            </p>
+
+            <!-- Linha divisória -->
+            <div class="w-12 h-0.5 bg-primary-gold mx-auto mt-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Estatísticas da equipe -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 reveal-effect">
+      <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div class="w-16 h-16 bg-primary-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-2xl">👨‍⚕️</span>
+        </div>
+        <h4 class="font-cormorant text-3xl font-semibold text-primary-dark mb-2">
+          15+
+        </h4>
+        <p class="text-gray-text text-sm">
+          Anos de experiência média
+        </p>
+      </div>
+
+      <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div class="w-16 h-16 bg-primary-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-2xl">🏆</span>
+        </div>
+        <h4 class="font-cormorant text-3xl font-semibold text-primary-dark mb-2">
+          25+
+        </h4>
+        <p class="text-gray-text text-sm">
+          Certificações em conjunto
+        </p>
+      </div>
+
+      <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div class="w-16 h-16 bg-primary-gold/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-2xl">❤️</span>
+        </div>
+        <h4 class="font-cormorant text-3xl font-semibold text-primary-dark mb-2">
+          98%
+        </h4>
+        <p class="text-gray-text text-sm">
+          Satisfação dos pacientes
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .team-card {
+    position: relative;
+  }
+  
+  .team-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(145deg, transparent 0%, rgba(201, 168, 116, 0.02) 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+  
+  .team-card:hover::before {
+    opacity: 1;
+  }
+  
+  .team-card:hover {
+    box-shadow: 0 25px 50px rgba(19, 31, 47, 0.15);
+  }
+  #team  {
+    zoom: 0.9
+  }
+</style>

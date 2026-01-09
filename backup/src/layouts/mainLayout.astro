@@ -27,8 +27,7 @@ const {
   structured_data,
 } = Astro.props;
 
-// Gera URL canônica correta
-const defaultUrl = new URL(Astro.url.pathname, Astro.site).href;
+const defaultUrl = import.meta.env.BASE_URL;
 ---
 
 <!doctype html>
@@ -53,13 +52,7 @@ const defaultUrl = new URL(Astro.url.pathname, Astro.site).href;
     {structured_data && (
       <script type="application/ld+json" is:inline set:html={structured_data} />
     )}
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="/favicon-96x96-2026.png" sizes="96x96" />
-  <link rel="icon" type="image/svg+xml" href="/favicon-2026.svg" />
-  <link rel="shortcut icon" href="/favicon-2026.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-2026.png" />
-  <meta name="apple-mobile-web-app-title" content="Lumino Clinica" />
-  <link rel="manifest" href="/site-2026.webmanifest" />
+
     <script
       src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"
       is:inline></script>

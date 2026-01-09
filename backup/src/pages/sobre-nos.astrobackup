@@ -1,0 +1,29 @@
+---
+import MainLayout from '../layouts/mainLayout.astro';
+import AboutUs from '../components/sections/aboutUs.astro';
+import CounterSection from '../components/sections/counterSection.astro';
+import CertificationSection from '../components/sections/certificationSection.astro';
+
+import TeamSection from '../components/sections/teamSection.astro';
+import GallerySection from '../components/sections/gallerySection.astro';
+import LocationSection from '../components/sections/locationSection.astro';
+import CtaSection from '../components/sections/ctaSection.astro';
+import ParticlesBackground from '../components/animations/ParticlesBackground.astro';
+
+const pageTitle = 'Sobre nós';
+const pageDescription =
+  'Conheça todos os nossos tratamentos estéticos. Botox, preenchimento, harmonização facial e muito mais. Agende sua consulta gratuita.';
+---
+
+<MainLayout title={pageTitle} description={pageDescription}>
+  <div class="mt-22">
+    <AboutUs {...aboutUsData} />
+    <TeamSection {...teamData} />
+    <CounterSection stats={counterSectionStatus} />
+    <CertificationSection {...certificationsData} />
+    <GallerySection {...galleryData} />
+    <LocationSection {...locationData} />
+    <CtaSection {...contactCTAData} />
+  </div>
+  <ParticlesBackground />
+</MainLayout>

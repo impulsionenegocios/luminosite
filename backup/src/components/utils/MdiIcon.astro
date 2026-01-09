@@ -1,0 +1,48 @@
+---
+// src/components/MdiIcon.astro
+import * as mdi from '@mdi/js';
+
+interface Props {
+  name: string; // Ex: 'account-box' ou 'smiley'
+  size?: number; // Tamanho em pixels (default: 24)
+  color?: string; // Cor SVG (default: currentColor)
+  className?: string; // Tailwind ou outra classe extra
+}
+
+const { name, size = 24, color = 'currentColor', className = '' } = Astro.props;
+
+// Transforma 'account-box' → 'mdiAccountBox'
+const iconKey =
+  'mdi' +
+  name
+    .split('-')
+    .map((segment, i) =>
+      i === 0
+        ? segment.charAt(0).toUpperCase() + segment.slice(1)
+        : segment.charAt(0).toUpperCase() + segment.slice(1),
+    )
+    .join('');
+
+// @ts-ignore
+const pathData = mdi[iconKey];
+
+if (!pathData) {
+  console.warn(`Ícone "${iconKey}" não encontrado em @mdi/js`);
+}
+---
+
+{
+  pathData && (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill={color}
+      class={className}
+      aria-hidden="true"
+    >
+      <path d={pathData} />
+    </svg>
+  )
+}
